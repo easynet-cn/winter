@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"log"
 	"maps"
-	"net"
 	"os"
 	"path"
 	"path/filepath"
@@ -236,7 +235,7 @@ func (m *Nacos) registerService(namingClient naming_client.INamingClient) (bool,
 	maps.Copy(m.metadata, metadata)
 
 	return namingClient.RegisterInstance(vo.RegisterInstanceParam{
-		Ip:          externalIP().String(),
+		Ip:          ExternalIP().String(),
 		Port:        m.config.GetUint64("server.port"),
 		ServiceName: serviceName,
 		Weight:      weight,
@@ -307,7 +306,7 @@ func (m *Nacos) registerNacoseServices() {
 		maps.Copy(m.metadata, metadata)
 
 		success, err := namingClient.RegisterInstance(vo.RegisterInstanceParam{
-			Ip:          externalIP().String(),
+			Ip:          ExternalIP().String(),
 			Port:        m.config.GetUint64("server.port"),
 			ServiceName: serviceName,
 			Weight:      weight,
@@ -321,61 +320,4 @@ func (m *Nacos) registerNacoseServices() {
 			panic(fmt.Errorf("初始化nacos服务注册失败: %w", err))
 		}
 	}
-}
-
-func externalIP() net.IP {
-	ifaces, err := net.Interfaces()
-
-	if err != nil {
-		return nil
-	}
-
-	for _, iface := range ifaces {
-		if iface.Flags&net.FlagUp == 0 {
-			continue
-		}
-		if iface.Flags&net.FlagLoopback != 0 {
-			continue
-		}
-
-		addrs, err := iface.Addrs()
-
-		if err != nil {
-			return nil
-		}
-
-		for _, addr := range addrs {
-			ip := getIpFromAddr(addr)
-
-			if ip == nil {
-				continue
-			}
-
-			return ip
-		}
-	}
-
-	return nil
-}
-
-func getIpFromAddr(addr net.Addr) net.IP {
-	var ip net.IP
-
-	switch v := addr.(type) {
-	case *net.IPNet:
-		ip = v.IP
-	case *net.IPAddr:
-		ip = v.IP
-	}
-	if ip == nil || ip.IsLoopback() {
-		return nil
-	}
-
-	ip = ip.To4()
-
-	if ip == nil {
-		return nil
-	}
-
-	return ip
 }
