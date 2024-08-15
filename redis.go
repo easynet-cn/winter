@@ -8,20 +8,22 @@ import (
 )
 
 type Redis struct {
+	config       *viper.Viper
 	redisClients map[string]*redis.Client
 }
 
-func NewRedis() *Redis {
+func NewRedis(config *viper.Viper) *Redis {
 	return &Redis{
+		config:       config,
 		redisClients: make(map[string]*redis.Client),
 	}
 }
 
-func (m *Redis) Init(viper *viper.Viper) {
-	for k := range viper.GetStringMap("spring.redis") {
+func (m *Redis) Init() {
+	for k := range m.config.GetStringMap("spring.redis") {
 		redisClient := redis.NewClient(&redis.Options{
-			Addr:     fmt.Sprintf("%s:%d", viper.GetString("spring.redis.host"), viper.GetInt("spring.redis.port")),
-			Password: viper.GetString("spring.redis.password"),
+			Addr:     fmt.Sprintf("%s:%d", m.config.GetString("spring.redis.host"), m.config.GetInt("spring.redis.port")),
+			Password: m.config.GetString("spring.redis.password"),
 		})
 
 		m.redisClients[k] = redisClient

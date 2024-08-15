@@ -8,30 +8,32 @@ import (
 )
 
 type Database struct {
-	dbs map[string]*xorm.Engine
+	config *viper.Viper
+	dbs    map[string]*xorm.Engine
 }
 
-func NewDatabase() *Database {
+func NewDatabase(config *viper.Viper) *Database {
 	return &Database{
-		dbs: make(map[string]*xorm.Engine),
+		config: config,
+		dbs:    make(map[string]*xorm.Engine),
 	}
 }
 
-func (m *Database) Init(config *viper.Viper) {
-	dbConfigs := config.GetStringMap("spring.datasources")
+func (m *Database) Init() {
+	dbConfigs := m.config.GetStringMap("spring.datasources")
 
 	for k := range dbConfigs {
-		dbType := config.GetString(fmt.Sprintf("spring.datasources.%s.type", k))
+		dbType := m.config.GetString(fmt.Sprintf("spring.datasources.%s.type", k))
 
 		if dbType == "" {
 			dbType = "mysql"
 		}
 
-		if engine, err := xorm.NewEngine(dbType, config.GetString(fmt.Sprintf("spring.datasources.%s.url", k))); err != nil {
+		if engine, err := xorm.NewEngine(dbType, m.config.GetString(fmt.Sprintf("spring.datasources.%s.url", k))); err != nil {
 			panic(fmt.Errorf("连接数据库失败：%w", err))
 		} else {
-			engine.SetMaxOpenConns(config.GetInt(fmt.Sprintf("spring.datasources.%s.maxOpenConns", k)))
-			engine.SetMaxIdleConns(config.GetInt(fmt.Sprintf("spring.datasources.%s.maxIdleConns", k)))
+			engine.SetMaxOpenConns(m.config.GetInt(fmt.Sprintf("spring.datasources.%s.maxOpenConns", k)))
+			engine.SetMaxIdleConns(m.config.GetInt(fmt.Sprintf("spring.datasources.%s.maxIdleConns", k)))
 
 			m.dbs[k] = engine
 		}
