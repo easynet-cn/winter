@@ -5,9 +5,12 @@ go 1.22
 require (
 	github.com/gin-gonic/gin v1.10.0
 	github.com/nacos-group/nacos-sdk-go/v2 v2.2.7
+	github.com/natefinch/lumberjack v2.0.0+incompatible
 	github.com/redis/go-redis/v9 v9.6.1
 	github.com/spf13/pflag v1.0.5
 	github.com/spf13/viper v1.19.0
+	go.elastic.co/ecszap v1.0.3
+	go.uber.org/zap v1.27.0
 	xorm.io/xorm v1.3.9
 )
 
@@ -62,9 +65,7 @@ require (
 	github.com/syndtr/goleveldb v1.0.0 // indirect
 	github.com/twitchyliquid64/golang-asm v0.15.1 // indirect
 	github.com/ugorji/go/codec v1.2.12 // indirect
-	go.uber.org/atomic v1.9.0 // indirect
-	go.uber.org/multierr v1.9.0 // indirect
-	go.uber.org/zap v1.21.0 // indirect
+	go.uber.org/multierr v1.10.0 // indirect
 	golang.org/x/arch v0.8.0 // indirect
 	golang.org/x/crypto v0.23.0 // indirect
 	golang.org/x/exp v0.0.0-20230905200255-921286631fa9 // indirect
