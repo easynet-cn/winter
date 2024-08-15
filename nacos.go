@@ -243,7 +243,7 @@ func (m *Nacos) registerService(namingClient naming_client.INamingClient) (bool,
 		Enable:      true,
 		Healthy:     true,
 		Ephemeral:   true,
-		Metadata:    metadata,
+		Metadata:    m.metadata,
 	})
 }
 
@@ -314,7 +314,7 @@ func (m *Nacos) registerNacoseServices() {
 			Enable:      true,
 			Healthy:     true,
 			Ephemeral:   true,
-			Metadata:    metadata,
+			Metadata:    m.metadata,
 		})
 
 		if !success || err != nil {
