@@ -1,8 +1,11 @@
 package winter
 
 import (
+	"encoding/base64"
 	"fmt"
+	"io"
 	"net"
+	"net/http"
 )
 
 func ExternalIP() net.IP {
@@ -71,4 +74,30 @@ func LocalIP() string {
 	}
 
 	return ip
+}
+
+func ReadFileFromUrl(url string) ([]byte, error) {
+	resp, err := http.Get(url)
+
+	if err != nil {
+		return nil, err
+	}
+
+	defer resp.Body.Close()
+
+	if bytes, err := io.ReadAll(resp.Body); err != nil {
+		return nil, err
+	} else if resp.StatusCode != 200 {
+		return nil, fmt.Errorf("http status code is %d", resp.StatusCode)
+	} else {
+		return bytes, nil
+	}
+}
+
+func ReadFileFromUrlAsBase64(url string) (string, error) {
+	if bytes, err := ReadFileFromUrl(url); err != nil {
+		return "", err
+	} else {
+		return base64.StdEncoding.EncodeToString(bytes), nil
+	}
 }
