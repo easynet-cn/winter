@@ -5,10 +5,33 @@ import (
 	"net/http"
 	"runtime"
 
+	"github.com/gin-contrib/gzip"
 	"github.com/gin-gonic/gin"
 	"github.com/spf13/viper"
+	"go.opentelemetry.io/contrib/instrumentation/github.com/gin-gonic/gin/otelgin"
 	"go.uber.org/zap"
+
+	ginzap "github.com/gin-contrib/zap"
 )
+
+type SystemMiddleware struct {
+	Logger     *zap.Logger
+	Config     *viper.Viper
+	Version    string
+	SyncDBFunc func() error
+}
+
+func RegisterDefaultMiddleware(engine *gin.Engine, systemMiddleware *SystemMiddleware) {
+	engine.Use(otelgin.Middleware(viper.GetString("spring.application.name")))
+	engine.Use(ginzap.Ginzap(systemMiddleware.Logger, viper.GetString("logging.date-time-format"), false))
+	engine.Use(gzip.Gzip(gzip.DefaultCompression))
+	engine.Use(Recovery(systemMiddleware.Logger))
+
+	engine.GET("/system/stats", SystemStats)
+	engine.GET("/system/version", Version(systemMiddleware.Config, systemMiddleware.Version))
+	engine.GET("/db/sync", SyncDB(systemMiddleware.SyncDBFunc))
+
+}
 
 func SystemStats(ctx *gin.Context) {
 	memStats := &runtime.MemStats{}
