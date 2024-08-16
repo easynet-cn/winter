@@ -22,8 +22,8 @@ func NewRedis(config *viper.Viper) *Redis {
 func (m *Redis) Init() {
 	for k := range m.config.GetStringMap("spring.redis") {
 		redisClient := redis.NewClient(&redis.Options{
-			Addr:     fmt.Sprintf("%s:%d", m.config.GetString("spring.redis.host"), m.config.GetInt("spring.redis.port")),
-			Password: m.config.GetString("spring.redis.password"),
+			Addr:     fmt.Sprintf("%s:%d", m.config.GetString(fmt.Sprintf("spring.redis.%s.host", k)), m.config.GetInt(fmt.Sprintf("spring.redis.%s.port", k))),
+			Password: m.config.GetString(fmt.Sprintf("spring.redis.%s.password", k)),
 		})
 
 		m.redisClients[k] = redisClient
