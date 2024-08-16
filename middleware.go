@@ -45,3 +45,14 @@ func Version(config *viper.Viper, version string) gin.HandlerFunc {
 		ctx.JSON(http.StatusOK, NewSystemVersion(version, config))
 	}
 }
+
+func SyncDB(f func() error) gin.HandlerFunc {
+	return func(ctx *gin.Context) {
+		if err := f(); err != nil {
+			ctx.JSON(http.StatusInternalServerError, RestResult{Status: 500, Code: "500", Message: err.Error()})
+		} else {
+			ctx.JSON(http.StatusOK, RestResult{Status: 200, Code: "200", Message: "同步成功"})
+		}
+
+	}
+}
