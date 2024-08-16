@@ -113,6 +113,8 @@ func (m *Nacos) Init() {
 		panic(err)
 	} else if !success {
 		log.Fatalf("Failed to register service")
+	} else {
+		m.defaultNameingClient = namingClient
 	}
 
 	m.registerNacoseServices()
@@ -319,5 +321,7 @@ func (m *Nacos) registerNacoseServices() {
 		if !success || err != nil {
 			panic(fmt.Errorf("初始化nacos服务注册失败: %w", err))
 		}
+
+		m.serviceNamingClients[k] = namingClient
 	}
 }
