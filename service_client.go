@@ -2,7 +2,6 @@ package winter
 
 import (
 	"fmt"
-	"math/rand/v2"
 	"net/http"
 	"net/url"
 
@@ -14,38 +13,22 @@ type Banlancer interface {
 	GetUri(serviceName string) (string, error)
 }
 
-type NacosRandomBanlancer struct {
+type NacosBanlancer struct {
 	namingClient naming_client.INamingClient
 }
 
-func (m *NacosRandomBanlancer) GetUri(serviceName string) (string, error) {
-	service, err := m.namingClient.GetService(vo.GetServiceParam{ServiceName: serviceName})
+func (m *NacosBanlancer) GetUri(serviceName string) (string, error) {
+	instance, err := m.namingClient.SelectOneHealthyInstance(vo.SelectOneHealthInstanceParam{ServiceName: serviceName})
 
 	if err != nil {
 		return "", err
 	}
 
-	if !service.Valid {
-		return "", fmt.Errorf("服务（%s）不存在", serviceName)
-	}
-
-	urls := make([]string, 0, len(service.Hosts))
-
-	for _, instance := range service.Hosts {
-		if instance.Enable && instance.Healthy {
-			urls = append(urls, fmt.Sprintf("http://%s:%d", instance.Ip, instance.Port))
-		}
-	}
-
-	if len(urls) == 0 {
+	if instance == nil {
 		return "", fmt.Errorf("服务（%s）没有可用的实例", serviceName)
 	}
 
-	if len(urls) == 1 {
-		return urls[0], nil
-	}
-
-	return urls[rand.IntN(len(urls))], nil
+	return fmt.Sprintf("http://%s:%d", instance.Ip, instance.Port), nil
 }
 
 type ServiceClient struct {
@@ -60,7 +43,7 @@ func NewServiceClient(
 	banlancer Banlancer) *ServiceClient {
 
 	if banlancer == nil {
-		banlancer = &NacosRandomBanlancer{namingClient: namingClient}
+		banlancer = &NacosBanlancer{namingClient: namingClient}
 	}
 
 	return &ServiceClient{
