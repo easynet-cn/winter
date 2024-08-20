@@ -89,7 +89,7 @@ func (m *WebClient) Do(
 		}
 	}
 
-	if req, err := http.NewRequest(method, m.url(baseUrl, path, urlValues), reader); err != nil {
+	if req, err := http.NewRequest(method, Url(baseUrl, path, urlValues), reader); err != nil {
 		return nil, 0, nil, err
 	} else {
 		for _, f := range funcs {
@@ -126,7 +126,7 @@ func (m *WebClient) DoRequest(req *http.Request) (*http.Response, int, []byte, e
 	}
 }
 
-func (m *WebClient) url(baseUrl string, path string, urlValues url.Values) string {
+func Url(baseUrl string, path string, urlValues url.Values) string {
 	result, _ := url.JoinPath(baseUrl, path)
 
 	sb := new(strings.Builder)
