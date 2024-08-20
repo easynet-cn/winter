@@ -7,3 +7,19 @@ type RestResult struct {
 	Message string `json:"message"`
 	Error   string `json:"error"`
 }
+
+func NewRestResult(
+	status int,
+	code string,
+	data any,
+	message string,
+	err string,
+) *RestResult {
+	return &RestResult{
+		Status:  status,
+		Code:    code,
+		Data:    data,
+		Message: message,
+		Error:   err,
+	}
+}
