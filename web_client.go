@@ -93,7 +93,9 @@ func (m *WebClient) Do(
 		return nil, 0, nil, err
 	} else {
 		for _, f := range funcs {
-			f(req.Header)
+			if f != nil {
+				f(req.Header)
+			}
 		}
 
 		return m.DoRequest(req)

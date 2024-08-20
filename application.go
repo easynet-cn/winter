@@ -32,7 +32,9 @@ func (m *Application) GetEngine() *gin.Engine {
 
 func (m *Application) Run(funcs ...ApplicationFunc) {
 	for _, f := range funcs {
-		f()
+		if f != nil {
+			f()
+		}
 	}
 
 	m.engine.Run(fmt.Sprintf(":%d", m.nacos.GetConfig().GetInt("server.port")))
