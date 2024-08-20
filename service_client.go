@@ -53,26 +53,53 @@ func NewServiceClient(
 	}
 }
 
-func (m *ServiceClient) Get(serviceName string, path string, urlValues url.Values) (int, []byte, error) {
-	_, code, bytees, err := m.Do(serviceName, "POST", "application/json;charset=UTF-8", path, urlValues, nil)
+func (m *ServiceClient) Get(
+	serviceName string,
+	path string,
+	urlValues url.Values,
+	encodingFunc EncodingFunc,
+	funcs ...RequestHeaderFunc,
+) (int, []byte, error) {
+	_, code, bytees, err := m.Do(serviceName, "POST", path, urlValues, nil, encodingFunc, funcs...)
 
 	return code, bytees, err
 }
 
-func (m *ServiceClient) Post(serviceName string, path string, urlValues url.Values, bodyValue any) (int, []byte, error) {
-	_, code, bytees, err := m.Do(serviceName, "POST", "application/json;charset=UTF-8", path, urlValues, bodyValue)
+func (m *ServiceClient) Post(
+	serviceName string,
+	path string,
+	urlValues url.Values,
+	bodyValue any,
+	encodingFunc EncodingFunc,
+	funcs ...RequestHeaderFunc,
+) (int, []byte, error) {
+	_, code, bytees, err := m.Do(serviceName, "POST", path, urlValues, bodyValue, encodingFunc, funcs...)
 
 	return code, bytees, err
 }
 
-func (m *ServiceClient) Put(serviceName string, path string, urlValues url.Values, bodyValue any) (int, []byte, error) {
-	_, code, bytees, err := m.Do(serviceName, "PUT", "application/json;charset=UTF-8", path, urlValues, bodyValue)
+func (m *ServiceClient) Put(
+	serviceName string,
+	path string,
+	urlValues url.Values,
+	bodyValue any,
+	encodingFunc EncodingFunc,
+	funcs ...RequestHeaderFunc,
+) (int, []byte, error) {
+	_, code, bytees, err := m.Do(serviceName, "PUT", path, urlValues, bodyValue, encodingFunc, funcs...)
 
 	return code, bytees, err
 }
 
-func (m *ServiceClient) Delete(serviceName string, path string, urlValues url.Values, bodyValue any) (int, []byte, error) {
-	_, code, bytees, err := m.Do(serviceName, "DELETE", "application/json;charset=UTF-8", path, urlValues, bodyValue)
+func (m *ServiceClient) Delete(
+	serviceName string,
+	path string,
+	urlValues url.Values,
+	bodyValue any,
+	encodingFunc EncodingFunc,
+	funcs ...RequestHeaderFunc,
+) (int, []byte, error) {
+	_, code, bytees, err := m.Do(serviceName, "DELETE", path, urlValues, bodyValue, encodingFunc, funcs...)
 
 	return code, bytees, err
 }
@@ -80,14 +107,17 @@ func (m *ServiceClient) Delete(serviceName string, path string, urlValues url.Va
 func (m *ServiceClient) Do(
 	serviceName string,
 	method string,
-	contentType string,
-	path string, urlValues url.Values,
-	bodyValue any) (*http.Response, int, []byte, error) {
+	path string,
+	urlValues url.Values,
+	bodyValue any,
+	encodingFunc EncodingFunc,
+	funcs ...RequestHeaderFunc,
+) (*http.Response, int, []byte, error) {
 	serviceUrl, err := m.banlancer.GetUri(serviceName)
 
 	if err != nil {
 		return nil, 0, nil, err
 	}
 
-	return m.webClient.Do(method, contentType, serviceUrl, path, urlValues, bodyValue)
+	return m.webClient.Do(method, serviceUrl, path, urlValues, bodyValue, encodingFunc, funcs...)
 }

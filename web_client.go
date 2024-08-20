@@ -2,7 +2,6 @@ package winter
 
 import (
 	"bytes"
-	"encoding/json"
 	"io"
 	"net/http"
 	"net/url"
@@ -17,41 +16,113 @@ func NewWebClient(client *http.Client) *WebClient {
 	return &WebClient{Client: client}
 }
 
-func (m *WebClient) Get(baseUrl string, path string, urlValues url.Values) (int, []byte, error) {
-	_, code, bytees, err := m.Do("GET", "application/json;charset=UTF-8", baseUrl, path, urlValues, nil)
+type RequestHeaderFunc func(http.Header)
+type EncodingFunc func(v any) ([]byte, error)
 
-	return code, bytees, err
+func (m *WebClient) Get(
+	baseUrl string,
+	path string,
+	urlValues url.Values,
+	encodingFunc EncodingFunc,
+	funcs ...RequestHeaderFunc,
+) (int, []byte, error) {
+	_, code, bytes, err := m.Do("GET", baseUrl, path, urlValues, nil, encodingFunc, funcs...)
+
+	return code, bytes, err
 }
 
-func (m *WebClient) Post(baseUrl string, path string, urlValues url.Values, bodyValue any) (int, []byte, error) {
-	_, code, bytees, err := m.Do("POST", "application/json;charset=UTF-8", baseUrl, path, urlValues, bodyValue)
+func (m *WebClient) Post(
+	baseUrl string,
+	path string,
+	urlValues url.Values,
+	bodyValue any,
+	encodingFunc EncodingFunc,
+	funcs ...RequestHeaderFunc,
+) (int, []byte, error) {
+	_, code, bytes, err := m.Do("POST", baseUrl, path, urlValues, bodyValue, encodingFunc, funcs...)
 
-	return code, bytees, err
+	return code, bytes, err
 }
 
-func (m *WebClient) Put(baseUrl string, path string, urlValues url.Values, bodyValue any) (int, []byte, error) {
-	_, code, bytees, err := m.Do("PUT", "application/json;charset=UTF-8", baseUrl, path, urlValues, bodyValue)
+func (m *WebClient) Put(
+	baseUrl string,
+	path string,
+	urlValues url.Values,
+	bodyValue any,
+	encodingFunc EncodingFunc,
+	funcs ...RequestHeaderFunc,
+) (int, []byte, error) {
+	_, code, bytes, err := m.Do("PUT", baseUrl, path, urlValues, bodyValue, encodingFunc, funcs...)
 
-	return code, bytees, err
+	return code, bytes, err
 }
 
-func (m *WebClient) Delete(baseUrl string, path string, urlValues url.Values, bodyValue any) (int, []byte, error) {
-	_, code, bytees, err := m.Do("DELETE", "application/json;charset=UTF-8", baseUrl, path, urlValues, bodyValue)
+func (m *WebClient) Delete(
+	baseUrl string,
+	path string,
+	urlValues url.Values,
+	bodyValue any,
+	encodingFunc EncodingFunc,
+	funcs ...RequestHeaderFunc,
+) (int, []byte, error) {
+	_, code, bytes, err := m.Do("DELETE", baseUrl, path, urlValues, bodyValue, encodingFunc, funcs...)
 
-	return code, bytees, err
+	return code, bytes, err
 }
 
-func (m *WebClient) Do(method string, contentType string, baseUrl string, path string, urlValues url.Values, bodyValue any) (*http.Response, int, []byte, error) {
-	bodyValueBytes, err1 := json.Marshal(bodyValue)
+func (m *WebClient) Do(
+	method string,
+	baseUrl string,
+	path string,
+	urlValues url.Values,
+	bodyValue any,
+	encodingFunc EncodingFunc,
+	funcs ...RequestHeaderFunc,
+) (*http.Response, int, []byte, error) {
+	var reader io.Reader
 
-	if err1 != nil {
-		return nil, 0, nil, err1
+	if bodyValue != nil && encodingFunc != nil {
+		if bodyBytes, err := encodingFunc(bodyValue); err != nil {
+			return nil, 0, nil, err
+		} else {
+			reader = bytes.NewReader(bodyBytes)
+		}
 	}
 
-	if req, err := http.NewRequest(method, m.url(baseUrl, path, urlValues), bytes.NewReader(bodyValueBytes)); err != nil {
+	if req, err := http.NewRequest(method, m.url(baseUrl, path, urlValues), reader); err != nil {
 		return nil, 0, nil, err
 	} else {
-		return m.doRequest(req, contentType)
+		for _, f := range funcs {
+			f(req.Header)
+		}
+
+		return m.DoRequest(req)
+	}
+}
+
+func (m *WebClient) DoRequest(req *http.Request) (*http.Response, int, []byte, error) {
+	res, err := m.Client.Do(req)
+
+	statusCode := 0
+
+	if res != nil {
+		statusCode = res.StatusCode
+	}
+
+	if err != nil {
+		return res, statusCode, nil, err
+	}
+
+	if res == nil || res.Body == nil {
+		return res, statusCode, nil, nil
+	} else {
+		defer res.Body.Close()
+	}
+
+	if bytes, err := io.ReadAll(res.Body); err != nil {
+		return res, statusCode, nil, err
+	} else {
+		return res, statusCode, bytes, nil
 	}
 }
 
@@ -68,19 +139,4 @@ func (m *WebClient) url(baseUrl string, path string, urlValues url.Values) strin
 	}
 
 	return sb.String()
-
-}
-
-func (m *WebClient) doRequest(req *http.Request, contentType string) (*http.Response, int, []byte, error) {
-	req.Header.Set("Content-Type", contentType)
-
-	if res, err := m.Client.Do(req); err != nil {
-		return res, res.StatusCode, nil, err
-	} else {
-		if resBytes, err := io.ReadAll(res.Body); err != nil {
-			return res, res.StatusCode, nil, err
-		} else {
-			return res, res.StatusCode, resBytes, nil
-		}
-	}
 }
