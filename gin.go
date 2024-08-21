@@ -16,7 +16,13 @@ func RenderOkResult(ctx *gin.Context, result any) {
 
 func RenderBadRequestResult(ctx *gin.Context, err error) {
 	if businessError, ok := err.(*BusinessError); ok {
-		RenderResult(ctx, http.StatusBadRequest, businessError)
+		status := http.StatusBadRequest
+
+		if status != businessError.Status {
+			status = businessError.Status
+		}
+
+		RenderResult(ctx, status, businessError)
 	} else {
 		RenderResult(ctx, http.StatusBadRequest, NewBadRequestBusinessError(err.Error()))
 	}
@@ -24,7 +30,13 @@ func RenderBadRequestResult(ctx *gin.Context, err error) {
 
 func RenderNotFoundResult(ctx *gin.Context, err error) {
 	if businessError, ok := err.(*BusinessError); ok {
-		RenderResult(ctx, http.StatusNotFound, businessError)
+		status := http.StatusNotFound
+
+		if status != businessError.Status {
+			status = businessError.Status
+		}
+
+		RenderResult(ctx, status, businessError)
 	} else {
 		RenderResult(ctx, http.StatusNotFound, NewNotFoundBusinessError(err.Error()))
 	}
@@ -32,7 +44,13 @@ func RenderNotFoundResult(ctx *gin.Context, err error) {
 
 func RenderUnauthorizedResult(ctx *gin.Context, err error) {
 	if businessError, ok := err.(*BusinessError); ok {
-		RenderResult(ctx, http.StatusUnauthorized, businessError)
+		status := http.StatusUnauthorized
+
+		if status != businessError.Status {
+			status = businessError.Status
+		}
+
+		RenderResult(ctx, status, businessError)
 	} else {
 		RenderResult(ctx, http.StatusUnauthorized, NewUnauthorizedBusinessError(err.Error()))
 	}
@@ -40,7 +58,13 @@ func RenderUnauthorizedResult(ctx *gin.Context, err error) {
 
 func RenderForbiddenResult(ctx *gin.Context, err error) {
 	if businessError, ok := err.(*BusinessError); ok {
-		RenderResult(ctx, http.StatusForbidden, businessError)
+		status := http.StatusForbidden
+
+		if status != businessError.Status {
+			status = businessError.Status
+		}
+
+		RenderResult(ctx, status, businessError)
 	} else {
 		RenderResult(ctx, http.StatusForbidden, NewForbiddenBusinessError(err.Error()))
 	}
@@ -56,7 +80,13 @@ func RenderInternalServerErrorResult(ctx *gin.Context, err error) {
 
 func RenderServiceUnavailableResult(ctx *gin.Context, err error) {
 	if businessError, ok := err.(*BusinessError); ok {
-		RenderResult(ctx, http.StatusServiceUnavailable, businessError)
+		status := http.StatusServiceUnavailable
+
+		if status != businessError.Status {
+			status = businessError.Status
+		}
+
+		RenderResult(ctx, status, businessError)
 	} else {
 		RenderResult(ctx, http.StatusServiceUnavailable, NewServiceUnavailableBusinessError(err.Error()))
 	}
