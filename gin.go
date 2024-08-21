@@ -2,6 +2,7 @@ package winter
 
 import (
 	"net/http"
+	"strconv"
 
 	"github.com/gin-gonic/gin"
 )
@@ -14,80 +15,40 @@ func RenderOkResult(ctx *gin.Context, result any) {
 	RenderResult(ctx, http.StatusOK, result)
 }
 
-func RenderBadRequestResult(ctx *gin.Context, err error) {
+func RenderErrorResult(ctx *gin.Context, status int, err error) {
 	if businessError, ok := err.(*BusinessError); ok {
-		status := http.StatusBadRequest
+		statusCode := status
 
-		if status != businessError.Status {
-			status = businessError.Status
+		if statusCode != businessError.Status {
+			statusCode = businessError.Status
 		}
 
-		RenderResult(ctx, status, businessError)
+		RenderResult(ctx, statusCode, businessError)
 	} else {
-		RenderResult(ctx, http.StatusBadRequest, NewBadRequestBusinessError(err.Error()))
+		RenderResult(ctx, status, NewBusinessError(status, strconv.Itoa(status), err.Error()))
 	}
+}
+
+func RenderBadRequestResult(ctx *gin.Context, err error) {
+	RenderErrorResult(ctx, http.StatusBadRequest, err)
 }
 
 func RenderNotFoundResult(ctx *gin.Context, err error) {
-	if businessError, ok := err.(*BusinessError); ok {
-		status := http.StatusNotFound
-
-		if status != businessError.Status {
-			status = businessError.Status
-		}
-
-		RenderResult(ctx, status, businessError)
-	} else {
-		RenderResult(ctx, http.StatusNotFound, NewNotFoundBusinessError(err.Error()))
-	}
+	RenderErrorResult(ctx, http.StatusNotFound, err)
 }
 
 func RenderUnauthorizedResult(ctx *gin.Context, err error) {
-	if businessError, ok := err.(*BusinessError); ok {
-		status := http.StatusUnauthorized
-
-		if status != businessError.Status {
-			status = businessError.Status
-		}
-
-		RenderResult(ctx, status, businessError)
-	} else {
-		RenderResult(ctx, http.StatusUnauthorized, NewUnauthorizedBusinessError(err.Error()))
-	}
+	RenderErrorResult(ctx, http.StatusUnauthorized, err)
 }
 
 func RenderForbiddenResult(ctx *gin.Context, err error) {
-	if businessError, ok := err.(*BusinessError); ok {
-		status := http.StatusForbidden
-
-		if status != businessError.Status {
-			status = businessError.Status
-		}
-
-		RenderResult(ctx, status, businessError)
-	} else {
-		RenderResult(ctx, http.StatusForbidden, NewForbiddenBusinessError(err.Error()))
-	}
+	RenderErrorResult(ctx, http.StatusForbidden, err)
 }
 
 func RenderInternalServerErrorResult(ctx *gin.Context, err error) {
-	if businessError, ok := err.(*BusinessError); ok {
-		RenderResult(ctx, http.StatusInternalServerError, businessError)
-	} else {
-		RenderResult(ctx, http.StatusInternalServerError, NewInternalServerErrorBusinessError(err.Error()))
-	}
+	RenderErrorResult(ctx, http.StatusInternalServerError, err)
 }
 
 func RenderServiceUnavailableResult(ctx *gin.Context, err error) {
-	if businessError, ok := err.(*BusinessError); ok {
-		status := http.StatusServiceUnavailable
-
-		if status != businessError.Status {
-			status = businessError.Status
-		}
-
-		RenderResult(ctx, status, businessError)
-	} else {
-		RenderResult(ctx, http.StatusServiceUnavailable, NewServiceUnavailableBusinessError(err.Error()))
-	}
+	RenderErrorResult(ctx, http.StatusServiceUnavailable, err)
 }
