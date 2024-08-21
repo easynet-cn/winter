@@ -59,5 +59,6 @@ func NewLogger(viper *viper.Viper) *zap.Logger {
 			zap.String("profile", viper.GetString("spring.profiles.active")),
 			zap.String("logTime", time.Now().Format(viper.GetString("logging.date-time-format"))),
 		),
+		zap.AddStacktrace(zap.ErrorLevel),
 	)
 }
