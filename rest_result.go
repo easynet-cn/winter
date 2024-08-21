@@ -10,7 +10,6 @@ type RestResult struct {
 	Code    string `json:"code"`
 	Data    any    `json:"data"`
 	Message string `json:"message"`
-	Error   string `json:"error"`
 }
 
 func NewRestResult(
@@ -18,52 +17,39 @@ func NewRestResult(
 	code string,
 	data any,
 	message string,
-	err string,
 ) *RestResult {
 	return &RestResult{
 		Status:  status,
 		Code:    code,
 		Data:    data,
 		Message: message,
-		Error:   err,
 	}
 }
 
 func NewSuccessRestResult(data any, message string) *RestResult {
-	return &RestResult{
-		Status:  http.StatusOK,
-		Code:    strconv.Itoa(http.StatusOK),
-		Data:    data,
-		Message: message,
-	}
+	return NewRestResult(http.StatusOK, strconv.Itoa(http.StatusOK), data, message)
 }
 
-func NewBadRequestRestResult(data any, message string, err string) *RestResult {
-	return &RestResult{
-		Status:  http.StatusBadRequest,
-		Code:    strconv.Itoa(http.StatusBadRequest),
-		Data:    data,
-		Message: message,
-		Error:   err,
-	}
+func NewBadRequestRestResult(data any, message string) *RestResult {
+	return NewRestResult(http.StatusBadRequest, strconv.Itoa(http.StatusBadRequest), data, message)
 }
 
-func NewNotFoundRestResult(data any, message string, err string) *RestResult {
-	return &RestResult{
-		Status:  http.StatusNotFound,
-		Code:    strconv.Itoa(http.StatusNotFound),
-		Data:    data,
-		Message: message,
-		Error:   err,
-	}
+func NewNotFoundRestResult(data any, message string) *RestResult {
+	return NewRestResult(http.StatusNotFound, strconv.Itoa(http.StatusNotFound), data, message)
 }
 
-func NewInternalServerErrorRestResult(data any, message string, err string) *RestResult {
-	return &RestResult{
-		Status:  http.StatusInternalServerError,
-		Code:    strconv.Itoa(http.StatusInternalServerError),
-		Data:    data,
-		Message: message,
-		Error:   err,
-	}
+func NewUnauthorizedRestResult(data any, message string) *RestResult {
+	return NewRestResult(http.StatusUnauthorized, strconv.Itoa(http.StatusUnauthorized), data, message)
+}
+
+func NewForbiddenRestResult(data any, message string) *RestResult {
+	return NewRestResult(http.StatusForbidden, strconv.Itoa(http.StatusForbidden), data, message)
+}
+
+func NewInternalServerErrorRestResult(data any, message string) *RestResult {
+	return NewRestResult(http.StatusInternalServerError, strconv.Itoa(http.StatusInternalServerError), data, message)
+}
+
+func NewServiceUnavailableRestResult(data any, message string) *RestResult {
+	return NewRestResult(http.StatusServiceUnavailable, strconv.Itoa(http.StatusServiceUnavailable), data, message)
 }

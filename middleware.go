@@ -54,7 +54,7 @@ func Recovery(logger *zap.Logger) gin.HandlerFunc {
 			if r := recover(); r != nil {
 				logger.Error("middleware", zap.Error(fmt.Errorf("%v", r)))
 
-				ctx.JSON(http.StatusOK, RestResult{Status: 500, Code: "500", Message: "系统内部错误", Error: fmt.Sprintf("%v", r)})
+				ctx.JSON(http.StatusOK, NewInternalServerErrorBusinessError(fmt.Sprintf("%v", r)))
 
 			}
 		}()

@@ -20,27 +20,27 @@ func NewBusinessError(status int, code string, message string) *BusinessError {
 }
 
 func NewBadRequestBusinessError(message string) *BusinessError {
-	return &BusinessError{
-		Status:  http.StatusBadRequest,
-		Code:    strconv.Itoa(http.StatusBadRequest),
-		Message: message,
-	}
+	return NewBusinessError(http.StatusBadRequest, strconv.Itoa(http.StatusBadRequest), message)
 }
 
 func NewNotFoundBusinessError(message string) *BusinessError {
-	return &BusinessError{
-		Status:  http.StatusNotFound,
-		Code:    strconv.Itoa(http.StatusNotFound),
-		Message: message,
-	}
+	return NewBusinessError(http.StatusNotFound, strconv.Itoa(http.StatusNotFound), message)
+}
+
+func NewUnauthorizedBusinessError(message string) *BusinessError {
+	return NewBusinessError(http.StatusUnauthorized, strconv.Itoa(http.StatusUnauthorized), message)
+}
+
+func NewForbiddenBusinessError(message string) *BusinessError {
+	return NewBusinessError(http.StatusForbidden, strconv.Itoa(http.StatusForbidden), message)
 }
 
 func NewInternalServerErrorBusinessError(message string) *BusinessError {
-	return &BusinessError{
-		Status:  http.StatusInternalServerError,
-		Code:    strconv.Itoa(http.StatusInternalServerError),
-		Message: message,
-	}
+	return NewBusinessError(http.StatusInternalServerError, strconv.Itoa(http.StatusInternalServerError), message)
+}
+
+func NewServiceUnavailableBusinessError(message string) *BusinessError {
+	return NewBusinessError(http.StatusServiceUnavailable, strconv.Itoa(http.StatusServiceUnavailable), message)
 }
 
 func (m *BusinessError) Error() string {
