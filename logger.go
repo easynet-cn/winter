@@ -51,7 +51,9 @@ func NewLogger(viper *viper.Viper) *zap.Logger {
 	)
 
 	return zap.New(
-		core, zap.AddCaller(),
+		core,
+		zap.AddCaller(),
+		zap.AddCallerSkip(1),
 		zap.Fields(
 			zap.String("application", viper.GetString("spring.application.name")),
 			zap.String("serverIp", LocalIP()),

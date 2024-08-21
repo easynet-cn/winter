@@ -2,6 +2,7 @@ package winter
 
 import (
 	"bytes"
+	"encoding/json"
 	"io"
 	"net/http"
 	"net/url"
@@ -81,8 +82,16 @@ func (m *WebClient) Do(
 ) (*http.Response, int, []byte, error) {
 	var reader io.Reader
 
-	if bodyValue != nil && encodingFunc != nil {
-		if bodyBytes, err := encodingFunc(bodyValue); err != nil {
+	if bodyValue != nil {
+		if encodingFunc != nil {
+			if bodyBytes, err := encodingFunc(bodyValue); err != nil {
+				return nil, 0, nil, err
+			} else {
+				reader = bytes.NewReader(bodyBytes)
+			}
+		} else if bodyBytes, ok := bodyValue.([]byte); ok {
+			reader = bytes.NewReader(bodyBytes)
+		} else if bodyBytes, err := json.Marshal(bodyValue); err != nil {
 			return nil, 0, nil, err
 		} else {
 			reader = bytes.NewReader(bodyBytes)
