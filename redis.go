@@ -7,6 +7,10 @@ import (
 	"github.com/spf13/viper"
 )
 
+const (
+	defaultRedisClientKey = "default"
+)
+
 type Redis struct {
 	config       *viper.Viper
 	redisClients map[string]*redis.Client
@@ -32,4 +36,8 @@ func (m *Redis) Init() {
 
 func (m *Redis) GetRedisClients() map[string]*redis.Client {
 	return m.redisClients
+}
+
+func (m *Redis) GetRedisClient() *redis.Client {
+	return m.redisClients[defaultRedisClientKey]
 }

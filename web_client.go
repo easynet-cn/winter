@@ -20,6 +20,12 @@ func NewWebClient(client *http.Client) *WebClient {
 type RequestHeaderFunc func(http.Header)
 type EncodingFunc func(v any) ([]byte, error)
 
+type JsonResult struct {
+	Status        int
+	BusinessError *BusinessError
+	Text          string
+}
+
 func (m *WebClient) Get(
 	baseUrl string,
 	path string,
@@ -150,4 +156,29 @@ func Url(baseUrl string, path string, urlValues url.Values) string {
 	}
 
 	return sb.String()
+}
+
+func ResponseToJsonResult(status int, bytes []byte, result ...any) (*JsonResult, error) {
+	jsonResult := &JsonResult{
+		Status:        status,
+		BusinessError: &BusinessError{},
+	}
+
+	if len(bytes) > 0 {
+		jsonResult.Text = string(bytes)
+
+		if status != http.StatusOK {
+			if err := json.Unmarshal(bytes, jsonResult.BusinessError); err != nil {
+				return nil, err
+			}
+		}
+
+		for _, v := range result {
+			if err := json.Unmarshal(bytes, v); err != nil {
+				return nil, err
+			}
+		}
+	}
+
+	return jsonResult, nil
 }

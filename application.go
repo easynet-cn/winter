@@ -37,5 +37,7 @@ func (m *Application) Run(funcs ...ApplicationFunc) {
 		}
 	}
 
-	m.engine.Run(fmt.Sprintf(":%d", m.nacos.GetConfig().GetInt("server.port")))
+	if err := m.engine.Run(fmt.Sprintf(":%d", m.nacos.GetConfig().GetInt("server.port"))); err != nil {
+		panic(err)
+	}
 }
