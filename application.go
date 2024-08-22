@@ -15,6 +15,7 @@ type Application struct {
 
 func NewApplication(
 	nacos *Nacos,
+	systemMiddleware *SystemMiddleware,
 ) *Application {
 	gin.SetMode(gin.ReleaseMode)
 
@@ -22,6 +23,8 @@ func NewApplication(
 		engine: gin.Default(),
 		nacos:  nacos,
 	}
+
+	RegisterDefaultMiddleware(application.engine, systemMiddleware)
 
 	return application
 }
