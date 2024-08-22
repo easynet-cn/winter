@@ -58,8 +58,8 @@ func (m *Nacos) GetDefaultNameingClient() naming_client.INamingClient {
 	return m.defaultNameingClient
 }
 
-func (m *Nacos) GetServiceNamingClient(serviceName string) naming_client.INamingClient {
-	return m.serviceNamingClients[serviceName]
+func (m *Nacos) GetServiceNamingClient(configKey string) naming_client.INamingClient {
+	return m.serviceNamingClients[configKey]
 }
 
 func (m *Nacos) GetServiceNamingClients() map[string]naming_client.INamingClient {
@@ -74,8 +74,8 @@ func (m *Nacos) BuildDefaultServiceClient(webClient *WebClient) *ServiceClient {
 	return NewServiceClient(m.defaultNameingClient, webClient, nil)
 }
 
-func (m *Nacos) BuildServiceClientWithServiceName(webClient *WebClient, serviceName string) *ServiceClient {
-	return NewServiceClient(m.serviceNamingClients[serviceName], webClient, nil)
+func (m *Nacos) BuildServiceClientWithConfigKey(webClient *WebClient, configKey string) *ServiceClient {
+	return NewServiceClient(m.serviceNamingClients[configKey], webClient, nil)
 }
 
 func (m *Nacos) Init() {
