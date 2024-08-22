@@ -70,6 +70,14 @@ func (m *Nacos) GetMetadata() map[string]string {
 	return m.metadata
 }
 
+func (m *Nacos) BuildDefaultServiceClient(webClient *WebClient) *ServiceClient {
+	return NewServiceClient(m.defaultNameingClient, webClient, nil)
+}
+
+func (m *Nacos) BuildServiceClientWithServiceName(webClient *WebClient, serviceName string) *ServiceClient {
+	return NewServiceClient(m.serviceNamingClients[serviceName], webClient, nil)
+}
+
 func (m *Nacos) Init() {
 	if flagSet, err := getFlatSet(); err != nil {
 		panic(err)
