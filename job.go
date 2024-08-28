@@ -3,12 +3,12 @@ package winter
 import (
 	"github.com/go-co-op/gocron/v2"
 	"github.com/golang-module/carbon/v2"
+	"github.com/google/uuid"
 )
 
 type Scheduler struct {
 	Id             string           `json:"id"`
 	Name           string           `json:"name"`
-	Jobs           []Job            `json:"jobs"`
 	InnerScheduler gocron.Scheduler `json:"-"`
 }
 
@@ -23,15 +23,39 @@ func NewScheduler(
 		InnerScheduler: innerScheduler,
 	}
 
-	jobs := innerScheduler.Jobs()
+	return scheduler
+}
 
-	scheduler.Jobs = make([]Job, 0, len(jobs))
+func (m *Scheduler) GetJobs() []Job {
+	innerJobs := m.InnerScheduler.Jobs()
 
-	for _, job := range jobs {
-		scheduler.Jobs = append(scheduler.Jobs, *NewJob(job))
+	jobs := make([]Job, 0, len(innerJobs))
+
+	for _, job := range innerJobs {
+		jobs = append(jobs, *NewJob(job))
 	}
 
-	return scheduler
+	return jobs
+}
+
+func (m *Scheduler) Start() {
+	m.InnerScheduler.Start()
+}
+
+func (m *Scheduler) StopJobs() {
+	m.InnerScheduler.StopJobs()
+}
+
+func (m *Scheduler) RemoveByTags(tags ...string) {
+	m.InnerScheduler.RemoveByTags(tags...)
+}
+
+func (m *Scheduler) RemoveJob(id uuid.UUID) error {
+	return m.InnerScheduler.RemoveJob(id)
+}
+
+func (m *Scheduler) JobsWaitingInQueue() int {
+	return m.InnerScheduler.JobsWaitingInQueue()
 }
 
 type Job struct {
