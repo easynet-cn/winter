@@ -11,7 +11,7 @@ func RenderResult(ctx *gin.Context, status int, result any) {
 	ctx.JSON(status, result)
 }
 
-func RenderOkResult(ctx *gin.Context, result any) {
+func RenderSuccessResult(ctx *gin.Context, result any) {
 	RenderResult(ctx, http.StatusOK, result)
 }
 
