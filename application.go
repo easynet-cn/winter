@@ -4,6 +4,7 @@ import (
 	"fmt"
 
 	"github.com/gin-gonic/gin"
+	"github.com/google/uuid"
 	"go.uber.org/zap"
 )
 
@@ -89,6 +90,7 @@ func (m *Application) RegisterScheduler(scheduler *Scheduler) {
 	m.engine.GET("/system/jobs", m.Jobs(scheduler))
 	m.engine.POST("/system/jobs/start", m.Start(scheduler))
 	m.engine.POST("/system/jobs/stop", m.StopJobs(scheduler))
+	m.engine.DELETE("/system/jobs/:id", m.RemoveJobById(scheduler))
 }
 
 func (m *Application) Run(funcs ...ApplicationFunc) {
@@ -123,6 +125,20 @@ func (m *Application) StopJobs(scheduler *Scheduler) func(ctx *gin.Context) {
 			RenderInternalServerErrorResult(ctx, err)
 		} else {
 			RenderSuccessResult(ctx, NewSuccessRestResult(true, "已停止所有任务"))
+		}
+	}
+}
+
+func (m *Application) RemoveJobById(scheduler *Scheduler) func(ctx *gin.Context) {
+	return func(ctx *gin.Context) {
+		id := ctx.Param("id")
+
+		if uuid, err := uuid.Parse(id); err != nil {
+			RenderBadRequestResult(ctx, err)
+		} else if err := scheduler.RemoveJob(uuid); err != nil {
+			RenderInternalServerErrorResult(ctx, err)
+		} else {
+			RenderSuccessResult(ctx, NewSuccessRestResult(true, fmt.Sprintf("已删除任务（%s）", id)))
 		}
 	}
 }
