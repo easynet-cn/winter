@@ -85,6 +85,12 @@ func (m *Application) GetRedis() *Redis {
 	return m.redis
 }
 
+func (m *Application) RegisterScheduler(scheduler *Scheduler) {
+	m.engine.GET("/system/jobs", m.Jobs(scheduler))
+	m.engine.POST("/system/jobs/start", m.Start(scheduler))
+	m.engine.POST("/system/jobs/stop", m.StopJobs(scheduler))
+}
+
 func (m *Application) Run(funcs ...ApplicationFunc) {
 	for _, f := range funcs {
 		if f != nil {
@@ -94,5 +100,29 @@ func (m *Application) Run(funcs ...ApplicationFunc) {
 
 	if err := m.engine.Run(fmt.Sprintf(":%d", m.nacos.GetConfig().GetInt("server.port"))); err != nil {
 		panic(err)
+	}
+}
+
+func (m *Application) Jobs(scheduler *Scheduler) func(ctx *gin.Context) {
+	return func(ctx *gin.Context) {
+		RenderSuccessResult(ctx, scheduler.GetJobs())
+	}
+}
+
+func (m *Application) Start(scheduler *Scheduler) func(ctx *gin.Context) {
+	return func(ctx *gin.Context) {
+		scheduler.InnerScheduler.Start()
+
+		RenderSuccessResult(ctx, NewSuccessRestResult(true, "已启动调度器"))
+	}
+}
+
+func (m *Application) StopJobs(scheduler *Scheduler) func(ctx *gin.Context) {
+	return func(ctx *gin.Context) {
+		if err := scheduler.InnerScheduler.StopJobs(); err != nil {
+			RenderInternalServerErrorResult(ctx, err)
+		} else {
+			RenderSuccessResult(ctx, NewSuccessRestResult(true, "已停止所有任务"))
+		}
 	}
 }
