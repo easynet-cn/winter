@@ -2,20 +2,24 @@ package zentao
 
 import (
 	"encoding/json"
+	"fmt"
 	"net/http"
+	"net/url"
 
 	"github.com/easynet-cn/winter"
 )
 
 const (
-	getTokenPath         = "/api.php/v1/tokens"
-	getDepartmentsPath   = "/api.php/v1/departments"
-	getUserPath          = "/api.php/v1/user"
-	getProjects          = "/api.php/v1/projects"
-	getProjectExecutions = "/api.php/v1/projects/%d/executions"
-	getProjectStories    = "/api.php/v1/projects/%d/stories"
-	getExecutionStories  = "/api.php/v1/executions/%d/stories"
-	getExecutionTasks    = "/api.php/v1/executions/%d/tasks"
+	tokenHeader = "Token"
+
+	getTokenPath             = "/api.php/v1/tokens"
+	getDepartmentsPath       = "/api.php/v1/departments"
+	getCurrentUserPath       = "/api.php/v1/user"
+	getProjectsPath          = "/api.php/v1/projects"
+	getProjectExecutionsPath = "/api.php/v1/projects/%d/executions"
+	getProjectStoriesPath    = "/api.php/v1/projects/%d/stories"
+	getExecutionStoriesPath  = "/api.php/v1/executions/%d/stories"
+	getExecutionTasksPath    = "/api.php/v1/executions/%d/tasks"
 )
 
 type PageParam struct {
@@ -184,11 +188,11 @@ func NewZentaoClient(url string, webClient *winter.WebClient) *ZentaoClient {
 
 // 获取Token
 func (s *ZentaoClient) GetToken(request *GetTokenRequest) (int, []byte, *GetTokenResponse, error) {
-	response := &GetTokenResponse{}
-
 	if status, bytes, err := s.webClient.Post(s.url, getTokenPath, nil, request, nil); err != nil {
-		return status, bytes, response, err
+		return status, bytes, nil, err
 	} else if s.statusIsOk(status) && len(bytes) > 0 {
+		response := &GetTokenResponse{}
+
 		if err := json.Unmarshal(bytes, &response); err != nil {
 			return status, bytes, nil, err
 		}
@@ -199,6 +203,131 @@ func (s *ZentaoClient) GetToken(request *GetTokenRequest) (int, []byte, *GetToke
 	}
 }
 
+// 获取部门列表
+func (s *ZentaoClient) GetDepartments(token string) (int, []byte, []Department, error) {
+	if status, bytes, err := s.webClient.Post(s.url, getDepartmentsPath, nil, nil, nil, s.setTokenHeaderfunc(token)); err != nil {
+		return status, bytes, nil, err
+	} else if s.statusIsOk(status) && len(bytes) > 0 {
+		departments := make([]Department, 0)
+
+		if err := json.Unmarshal(bytes, &departments); err != nil {
+			return status, bytes, nil, err
+		}
+
+		return status, bytes, departments, nil
+	} else {
+		return status, bytes, nil, nil
+	}
+}
+
+// 获取当前用户信息
+func (s *ZentaoClient) GetCurrentUser(token string) (int, []byte, *User, error) {
+	if status, bytes, err := s.webClient.Post(s.url, getCurrentUserPath, nil, nil, nil, s.setTokenHeaderfunc(token)); err != nil {
+		return status, bytes, nil, err
+	} else if s.statusIsOk(status) && len(bytes) > 0 {
+		user := &User{}
+
+		if err := json.Unmarshal(bytes, &user); err != nil {
+			return status, bytes, nil, err
+		}
+
+		return status, bytes, user, nil
+	} else {
+		return status, bytes, nil, nil
+	}
+}
+
+// 获取项目列表
+func (s *ZentaoClient) GetProjects(token string, pageParam PageParam, urlValues url.Values) (int, []byte, []Project, error) {
+	if status, bytes, err := s.webClient.Post(s.url, getProjectsPath, urlValues, pageParam, nil, s.setTokenHeaderfunc(token)); err != nil {
+		return status, bytes, nil, err
+	} else if s.statusIsOk(status) && len(bytes) > 0 {
+		projects := make([]Project, 0)
+
+		if err := json.Unmarshal(bytes, &projects); err != nil {
+			return status, bytes, nil, err
+		}
+
+		return status, bytes, projects, nil
+	} else {
+		return status, bytes, nil, nil
+	}
+}
+
+// 获取项目执行列表
+func (s *ZentaoClient) GetProjectExecutions(token string, projectId int, pageParam PageParam, urlValues url.Values) (int, []byte, *ExecutionPageResult, error) {
+	if status, bytes, err := s.webClient.Post(s.url, fmt.Sprintf(getProjectExecutionsPath, projectId), urlValues, pageParam, nil, s.setTokenHeaderfunc(token)); err != nil {
+		return status, bytes, nil, err
+	} else if s.statusIsOk(status) && len(bytes) > 0 {
+		pageResult := &ExecutionPageResult{}
+
+		if err := json.Unmarshal(bytes, &pageResult); err != nil {
+			return status, bytes, nil, err
+		}
+
+		return status, bytes, pageResult, nil
+	} else {
+		return status, bytes, nil, nil
+	}
+}
+
+// 获取项目需求列表
+func (s *ZentaoClient) GetProjectStories(token string, projectId int, pageParam PageParam, urlValues url.Values) (int, []byte, *StoryPageResult, error) {
+	if status, bytes, err := s.webClient.Post(s.url, fmt.Sprintf(getProjectStoriesPath, projectId), urlValues, pageParam, nil, s.setTokenHeaderfunc(token)); err != nil {
+		return status, bytes, nil, err
+	} else if s.statusIsOk(status) && len(bytes) > 0 {
+		pageResult := &StoryPageResult{}
+
+		if err := json.Unmarshal(bytes, &pageResult); err != nil {
+			return status, bytes, nil, err
+		}
+
+		return status, bytes, pageResult, nil
+	} else {
+		return status, bytes, nil, nil
+	}
+}
+
+// 获取执行需求列表
+func (s *ZentaoClient) GetExecutionStories(token string, executionId int, pageParam PageParam, urlValues url.Values) (int, []byte, *StoryPageResult, error) {
+	if status, bytes, err := s.webClient.Post(s.url, fmt.Sprintf(getExecutionStoriesPath, executionId), urlValues, pageParam, nil, s.setTokenHeaderfunc(token)); err != nil {
+		return status, bytes, nil, err
+	} else if s.statusIsOk(status) && len(bytes) > 0 {
+		pageResult := &StoryPageResult{}
+
+		if err := json.Unmarshal(bytes, &pageResult); err != nil {
+			return status, bytes, nil, err
+		}
+
+		return status, bytes, pageResult, nil
+	} else {
+		return status, bytes, nil, nil
+	}
+}
+
+// 获取执行任务列表
+func (s *ZentaoClient) GetExecutionTasks(token string, executionId int, pageParam PageParam, urlValues url.Values) (int, []byte, *TaskPageResult, error) {
+	if status, bytes, err := s.webClient.Post(s.url, fmt.Sprintf(getExecutionTasksPath, executionId), urlValues, pageParam, nil, s.setTokenHeaderfunc(token)); err != nil {
+		return status, bytes, nil, err
+	} else if s.statusIsOk(status) && len(bytes) > 0 {
+		pageResult := &TaskPageResult{}
+
+		if err := json.Unmarshal(bytes, &pageResult); err != nil {
+			return status, bytes, nil, err
+		}
+
+		return status, bytes, pageResult, nil
+	} else {
+		return status, bytes, nil, nil
+	}
+}
+
 func (s *ZentaoClient) statusIsOk(status int) bool {
 	return status >= http.StatusOK && status < http.StatusMultipleChoices
+}
+
+func (s *ZentaoClient) setTokenHeaderfunc(token string) winter.RequestHeaderFunc {
+	return func(header http.Header) {
+		header.Set(tokenHeader, token)
+	}
 }
