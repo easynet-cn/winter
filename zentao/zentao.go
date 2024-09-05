@@ -188,7 +188,7 @@ func (s *ZentaoClient) GetToken(request *GetTokenRequest) (int, []byte, *GetToke
 
 	if status, bytes, err := s.webClient.Post(s.url, getTokenPath, nil, request, nil); err != nil {
 		return status, bytes, response, err
-	} else if status == http.StatusOK && len(bytes) > 0 {
+	} else if s.statusIsOk(status) && len(bytes) > 0 {
 		if err := json.Unmarshal(bytes, &response); err != nil {
 			return status, bytes, nil, err
 		}
@@ -197,4 +197,8 @@ func (s *ZentaoClient) GetToken(request *GetTokenRequest) (int, []byte, *GetToke
 	} else {
 		return status, bytes, nil, nil
 	}
+}
+
+func (s *ZentaoClient) statusIsOk(status int) bool {
+	return status >= http.StatusOK && status < http.StatusMultipleChoices
 }
