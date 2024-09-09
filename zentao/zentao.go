@@ -205,7 +205,7 @@ func (s *ZentaoClient) GetToken(request *GetTokenRequest) (int, []byte, *GetToke
 
 // 获取部门列表
 func (s *ZentaoClient) GetDepartments(token string) (int, []byte, []Department, error) {
-	if status, bytes, err := s.webClient.Post(s.url, getDepartmentsPath, nil, nil, nil, s.setTokenHeaderfunc(token)); err != nil {
+	if status, bytes, err := s.webClient.Get(s.url, getDepartmentsPath, nil, nil, nil, s.setTokenHeaderfunc(token)); err != nil {
 		return status, bytes, nil, err
 	} else if s.statusIsOk(status) && len(bytes) > 0 {
 		departments := make([]Department, 0)
@@ -222,7 +222,7 @@ func (s *ZentaoClient) GetDepartments(token string) (int, []byte, []Department, 
 
 // 获取当前用户信息
 func (s *ZentaoClient) GetCurrentUser(token string) (int, []byte, *User, error) {
-	if status, bytes, err := s.webClient.Post(s.url, getCurrentUserPath, nil, nil, nil, s.setTokenHeaderfunc(token)); err != nil {
+	if status, bytes, err := s.webClient.Get(s.url, getCurrentUserPath, nil, nil, nil, s.setTokenHeaderfunc(token)); err != nil {
 		return status, bytes, nil, err
 	} else if s.statusIsOk(status) && len(bytes) > 0 {
 		user := &User{}
@@ -239,7 +239,14 @@ func (s *ZentaoClient) GetCurrentUser(token string) (int, []byte, *User, error) 
 
 // 获取项目列表
 func (s *ZentaoClient) GetProjects(token string, pageParam PageParam, urlValues url.Values) (int, []byte, []Project, error) {
-	if status, bytes, err := s.webClient.Post(s.url, getProjectsPath, urlValues, pageParam, nil, s.setTokenHeaderfunc(token)); err != nil {
+	if urlValues == nil {
+		urlValues = make(url.Values)
+	}
+
+	urlValues.Set("page", pageParam.Page)
+	urlValues.Set("limit", pageParam.Limit)
+
+	if status, bytes, err := s.webClient.Get(s.url, getProjectsPath, urlValues, nil, s.setTokenHeaderfunc(token)); err != nil {
 		return status, bytes, nil, err
 	} else if s.statusIsOk(status) && len(bytes) > 0 {
 		projects := make([]Project, 0)
@@ -256,7 +263,14 @@ func (s *ZentaoClient) GetProjects(token string, pageParam PageParam, urlValues 
 
 // 获取项目执行列表
 func (s *ZentaoClient) GetProjectExecutions(token string, projectId int, pageParam PageParam, urlValues url.Values) (int, []byte, *ExecutionPageResult, error) {
-	if status, bytes, err := s.webClient.Post(s.url, fmt.Sprintf(getProjectExecutionsPath, projectId), urlValues, pageParam, nil, s.setTokenHeaderfunc(token)); err != nil {
+	if urlValues == nil {
+		urlValues = make(url.Values)
+	}
+
+	urlValues.Set("page", pageParam.Page)
+	urlValues.Set("limit", pageParam.Limit)
+
+	if status, bytes, err := s.webClient.Get(s.url, fmt.Sprintf(getProjectExecutionsPath, projectId), urlValues, nil, s.setTokenHeaderfunc(token)); err != nil {
 		return status, bytes, nil, err
 	} else if s.statusIsOk(status) && len(bytes) > 0 {
 		pageResult := &ExecutionPageResult{}
@@ -273,7 +287,14 @@ func (s *ZentaoClient) GetProjectExecutions(token string, projectId int, pagePar
 
 // 获取项目需求列表
 func (s *ZentaoClient) GetProjectStories(token string, projectId int, pageParam PageParam, urlValues url.Values) (int, []byte, *StoryPageResult, error) {
-	if status, bytes, err := s.webClient.Post(s.url, fmt.Sprintf(getProjectStoriesPath, projectId), urlValues, pageParam, nil, s.setTokenHeaderfunc(token)); err != nil {
+	if urlValues == nil {
+		urlValues = make(url.Values)
+	}
+
+	urlValues.Set("page", pageParam.Page)
+	urlValues.Set("limit", pageParam.Limit)
+
+	if status, bytes, err := s.webClient.Get(s.url, fmt.Sprintf(getProjectStoriesPath, projectId), urlValues, nil, s.setTokenHeaderfunc(token)); err != nil {
 		return status, bytes, nil, err
 	} else if s.statusIsOk(status) && len(bytes) > 0 {
 		pageResult := &StoryPageResult{}
@@ -290,7 +311,14 @@ func (s *ZentaoClient) GetProjectStories(token string, projectId int, pageParam 
 
 // 获取执行需求列表
 func (s *ZentaoClient) GetExecutionStories(token string, executionId int, pageParam PageParam, urlValues url.Values) (int, []byte, *StoryPageResult, error) {
-	if status, bytes, err := s.webClient.Post(s.url, fmt.Sprintf(getExecutionStoriesPath, executionId), urlValues, pageParam, nil, s.setTokenHeaderfunc(token)); err != nil {
+	if urlValues == nil {
+		urlValues = make(url.Values)
+	}
+
+	urlValues.Set("page", pageParam.Page)
+	urlValues.Set("limit", pageParam.Limit)
+
+	if status, bytes, err := s.webClient.Get(s.url, fmt.Sprintf(getExecutionStoriesPath, executionId), urlValues, nil, s.setTokenHeaderfunc(token)); err != nil {
 		return status, bytes, nil, err
 	} else if s.statusIsOk(status) && len(bytes) > 0 {
 		pageResult := &StoryPageResult{}
@@ -307,7 +335,14 @@ func (s *ZentaoClient) GetExecutionStories(token string, executionId int, pagePa
 
 // 获取执行任务列表
 func (s *ZentaoClient) GetExecutionTasks(token string, executionId int, pageParam PageParam, urlValues url.Values) (int, []byte, *TaskPageResult, error) {
-	if status, bytes, err := s.webClient.Post(s.url, fmt.Sprintf(getExecutionTasksPath, executionId), urlValues, pageParam, nil, s.setTokenHeaderfunc(token)); err != nil {
+	if urlValues == nil {
+		urlValues = make(url.Values)
+	}
+
+	urlValues.Set("page", pageParam.Page)
+	urlValues.Set("limit", pageParam.Limit)
+
+	if status, bytes, err := s.webClient.Get(s.url, fmt.Sprintf(getExecutionTasksPath, executionId), urlValues, nil, s.setTokenHeaderfunc(token)); err != nil {
 		return status, bytes, nil, err
 	} else if s.statusIsOk(status) && len(bytes) > 0 {
 		pageResult := &TaskPageResult{}
