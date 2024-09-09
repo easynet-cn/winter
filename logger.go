@@ -4,11 +4,11 @@ import (
 	"os"
 	"time"
 
-	"github.com/natefinch/lumberjack"
 	"github.com/spf13/viper"
 	"go.elastic.co/ecszap"
 	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"
+	"gopkg.in/natefinch/lumberjack.v2"
 )
 
 func NewLogger(viper *viper.Viper) *zap.Logger {
