@@ -54,6 +54,10 @@ type Department struct {
 	Manager  string `json:"manager"`  // 负责人
 }
 
+type UserProfile struct {
+	Profile User `json:"profile"`
+}
+
 type User struct {
 	Id       int     `json:"id"`       // 用户编号
 	Type     int     `json:"type"`     // 类型(inside 内部用户 | outside 外部用户)
@@ -221,17 +225,17 @@ func (s *ZentaoClient) GetDepartments(token string) (int, []byte, []Department, 
 }
 
 // 获取当前用户信息
-func (s *ZentaoClient) GetCurrentUser(token string) (int, []byte, *User, error) {
+func (s *ZentaoClient) GetCurrentUser(token string) (int, []byte, *UserProfile, error) {
 	if status, bytes, err := s.webClient.Get(s.url, getCurrentUserPath, nil, nil, nil, s.setTokenHeaderfunc(token)); err != nil {
 		return status, bytes, nil, err
 	} else if s.statusIsOk(status) && len(bytes) > 0 {
-		user := &User{}
+		profile := &UserProfile{}
 
-		if err := json.Unmarshal(bytes, &user); err != nil {
+		if err := json.Unmarshal(bytes, &profile); err != nil {
 			return status, bytes, nil, err
 		}
 
-		return status, bytes, user, nil
+		return status, bytes, profile, nil
 	} else {
 		return status, bytes, nil, nil
 	}
