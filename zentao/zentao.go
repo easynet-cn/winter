@@ -98,7 +98,7 @@ type Project struct {
 	OpenedBy   string  `json:"openedBy"`   // 创建人
 	OpenedDate string  `json:"openedDate"` // 创建时间
 	PM         string  `json:"pm"`         // 项目经理
-	Progress   int     `json:"progress"`   // 进度
+	Progress   string  `json:"progress"`   // 进度
 }
 
 type ProjectPageResult struct {
