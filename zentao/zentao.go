@@ -60,7 +60,7 @@ type UserProfile struct {
 
 type User struct {
 	Id       int     `json:"id"`       // 用户编号
-	Type     int     `json:"type"`     // 类型(inside 内部用户 | outside 外部用户)
+	Type     string  `json:"type"`     // 类型(inside 内部用户 | outside 外部用户)
 	Dept     int     `json:"dept"`     // 所属部门
 	Account  string  `json:"account"`  // 用户名
 	RealName string  `json:"realname"` // 真实姓名
