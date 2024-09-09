@@ -107,15 +107,15 @@ type ProjectPageResult struct {
 }
 
 type Execution struct {
-	Id         int     `json:"id"`         // 执行ID
-	Name       string  `json:"name"`       // 执行名称
-	Code       string  `json:"code"`       // 执行代号
-	Begin      *string `json:"begin"`      // 预计开始日期
-	End        *string `json:"end"`        // 预计结束日期
-	Status     string  `json:"status"`     // 项目状态(wait 未开始 | doing 进行中 | suspend 已挂起 | closed 已关闭)
-	OpenedBy   string  `json:"openedBy"`   // 创建人
-	OpenedDate string  `json:"openedDate"` // 创建时间
-	Progress   string  `json:"progress"`   // 进度
+	Id         int         `json:"id"`         // 执行ID
+	Name       string      `json:"name"`       // 执行名称
+	Code       string      `json:"code"`       // 执行代号
+	Begin      *string     `json:"begin"`      // 预计开始日期
+	End        *string     `json:"end"`        // 预计结束日期
+	Status     string      `json:"status"`     // 项目状态(wait 未开始 | doing 进行中 | suspend 已挂起 | closed 已关闭)
+	OpenedBy   *SimpleUser `json:"openedBy"`   // 创建人
+	OpenedDate string      `json:"openedDate"` // 创建时间
+	Progress   string      `json:"progress"`   // 进度
 }
 
 type ExecutionPageResult struct {
