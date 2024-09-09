@@ -1,8 +1,8 @@
 package winter
 
 type PageParam struct {
-	PageIndex int `json:"pageIndex"`
-	PageSize  int `json:"pageSize"`
+	PageIndex int `json:"pageIndex" form:"pageIndex"`
+	PageSize  int `json:"pageSize" form:"pageSize"`
 }
 
 func (pageParam *PageParam) Start() int {
