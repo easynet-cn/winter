@@ -243,7 +243,7 @@ func (s *ZentaoClient) GetCurrentUser(token string) (int, []byte, *UserProfile, 
 }
 
 // 获取项目列表
-func (s *ZentaoClient) GetProjects(token string, pageParam PageParam, urlValues url.Values) (int, []byte, []Project, error) {
+func (s *ZentaoClient) GetProjects(token string, pageParam PageParam, urlValues url.Values) (int, []byte, *ProjectPageResult, error) {
 	if urlValues == nil {
 		urlValues = make(url.Values)
 	}
@@ -254,13 +254,13 @@ func (s *ZentaoClient) GetProjects(token string, pageParam PageParam, urlValues 
 	if status, bytes, err := s.webClient.Get(s.url, getProjectsPath, urlValues, nil, s.setTokenHeaderfunc(token)); err != nil {
 		return status, bytes, nil, err
 	} else if s.statusIsOk(status) && len(bytes) > 0 {
-		projects := make([]Project, 0)
+		pageResult := &ProjectPageResult{}
 
-		if err := json.Unmarshal(bytes, &projects); err != nil {
+		if err := json.Unmarshal(bytes, &pageResult); err != nil {
 			return status, bytes, nil, err
 		}
 
-		return status, bytes, projects, nil
+		return status, bytes, pageResult, nil
 	} else {
 		return status, bytes, nil, nil
 	}
