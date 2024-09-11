@@ -135,7 +135,7 @@ type Execution struct {
 	Status      string       `json:"status"`      // 项目状态(wait 未开始 | doing 进行中 | suspend 已挂起 | closed 已关闭)
 	OpenedBy    *SimpleUser  `json:"openedBy"`    // 创建人
 	OpenedDate  string       `json:"openedDate"`  // 创建时间
-	Progress    string       `json:"progress"`    // 进度
+	Progress    any          `json:"progress"`    // 进度
 }
 
 type ExecutionPageResult struct {
