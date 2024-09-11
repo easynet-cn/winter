@@ -16,10 +16,14 @@ const (
 	getDepartmentsPath       = "/api.php/v1/departments"
 	getCurrentUserPath       = "/api.php/v1/user"
 	getProjectsPath          = "/api.php/v1/projects"
+	getProjectPath           = "/api.php/v1/projects/%d"
 	getProjectExecutionsPath = "/api.php/v1/projects/%d/executions"
 	getProjectStoriesPath    = "/api.php/v1/projects/%d/stories"
+	getStoryPath             = "/api.php/v1/stories/%d"
+	getExecutionPath         = "/api.php/v1/executions/%d"
 	getExecutionStoriesPath  = "/api.php/v1/executions/%d/stories"
 	getExecutionTasksPath    = "/api.php/v1/executions/%d/tasks"
+	getTaskPath              = "/api.php/v1/tasks/%d"
 )
 
 type PageParam struct {
@@ -85,20 +89,25 @@ type SimpleUser struct {
 }
 
 type Project struct {
-	Id         int         `json:"id"`         // 项目ID
-	Name       string      `json:"name"`       // 项目名称
-	Code       string      `json:"code"`       // 项目编号
-	Model      string      `json:"model"`      // 项目模型(scrum敏捷 | waterfall 瀑布)
-	Budget     string      `json:"budget"`     // 项目预算
-	BudgetUnit string      `json:"budgetUnit"` // 预算币种(CNY | USD)
-	Parent     int         `json:"parent"`     // 所属项目集
-	Begin      *string     `json:"begin"`      // 预计开始日期
-	End        *string     `json:"end"`        // 预计结束日期
-	Status     string      `json:"status"`     // 项目状态(wait 未开始 | doing 进行中 | suspend 已挂起 | closed 已关闭)
-	OpenedBy   *SimpleUser `json:"openedBy"`   // 创建人
-	OpenedDate string      `json:"openedDate"` // 创建时间
-	PM         *SimpleUser `json:"pm"`         // 项目经理
-	Progress   string      `json:"progress"`   // 进度
+	Id         int          `json:"id"`         // 项目ID
+	Parent     int          `json:"parent"`     // 所属项目集
+	Name       string       `json:"name"`       // 项目名称
+	Code       string       `json:"code"`       // 项目编号
+	Model      string       `json:"model"`      // 项目模型(scrum敏捷 | waterfall 瀑布)
+	Budget     string       `json:"budget"`     // 项目预算
+	BudgetUnit string       `json:"budgetUnit"` // 预算币种(CNY | USD)
+	Begin      *string      `json:"begin"`      // 预计开始日期
+	End        *string      `json:"end"`        // 预计结束日期
+	RealBegan  *string      `json:"realBegan"`  // 实际开始日期
+	RealEnd    *string      `json:"realEnd"`    // 实际结束日期
+	Status     string       `json:"status"`     // 项目状态(wait 未开始 | doing 进行中 | suspend 已挂起 | closed 已关闭)
+	Desc       string       `json:"desc"`       // 项目描述
+	OpenedBy   *SimpleUser  `json:"openedBy"`   // 创建人
+	OpenedDate string       `json:"openedDate"` // 创建时间
+	PM         *SimpleUser  `json:"pm"`         // 项目经理
+	Acl        string       `json:"acl"`        // 访问控制(open 公开 | private 私有)
+	Whitelist  []SimpleUser `json:"whitelist"`  // 白名单
+	Progress   string       `json:"progress"`   // 进度
 }
 
 type ProjectPageResult struct {
@@ -107,15 +116,26 @@ type ProjectPageResult struct {
 }
 
 type Execution struct {
-	Id         int         `json:"id"`         // 执行ID
-	Name       string      `json:"name"`       // 执行名称
-	Code       string      `json:"code"`       // 执行代号
-	Begin      *string     `json:"begin"`      // 预计开始日期
-	End        *string     `json:"end"`        // 预计结束日期
-	Status     string      `json:"status"`     // 项目状态(wait 未开始 | doing 进行中 | suspend 已挂起 | closed 已关闭)
-	OpenedBy   *SimpleUser `json:"openedBy"`   // 创建人
-	OpenedDate string      `json:"openedDate"` // 创建时间
-	Progress   string      `json:"progress"`   // 进度
+	Id          int          `json:"id"`          // 执行ID
+	Project     int          `json:"project"`     // 所属项目
+	Name        string       `json:"name"`        // 执行名称
+	Code        string       `json:"code"`        // 执行代号
+	Begin       *string      `json:"begin"`       // 预计开始日期
+	End         *string      `json:"end"`         // 预计结束日期
+	Days        int          `json:"days"`        // 可用工作日
+	Lifetime    string       `json:"lifetime"`    // 类型(short 短期 | long 长期 | ops 运维)
+	PO          *SimpleUser  `json:"po"`          // 产品负责人
+	PM          *SimpleUser  `json:"pm"`          // 迭代负责人
+	QD          *SimpleUser  `json:"qd"`          // 测试负责人
+	RD          *SimpleUser  `json:"rd"`          // 发布负责人
+	TeamMembers []SimpleUser `json:"teamMembers"` // 团队成员
+	Desc        string       `json:"desc"`        // 迭代描述
+	Acl         string       `json:"acl"`         // 访问控制(private 私有 | open 继承项目权限)
+	Whitelist   []SimpleUser `json:"whitelist"`   // 白名单
+	Status      string       `json:"status"`      // 项目状态(wait 未开始 | doing 进行中 | suspend 已挂起 | closed 已关闭)
+	OpenedBy    *SimpleUser  `json:"openedBy"`    // 创建人
+	OpenedDate  string       `json:"openedDate"`  // 创建时间
+	Progress    string       `json:"progress"`    // 进度
 }
 
 type ExecutionPageResult struct {
@@ -130,12 +150,13 @@ type Story struct {
 	Module     int         `json:"module"`     // 所属产品模块
 	FromBug    int         `json:"fromBug"`    // 来自于Bug
 	Source     string      `json:"source"`     // 需求来源(customer 客户 | user 用户 | po 产品经理 | market 市场)
-	SourceNo   string      `json:"sourceNo"`   // 来源备注
+	SourceNote string      `json:"sourceNote"` // 来源备注
 	Title      string      `json:"title"`      // 需求标题
 	Category   string      `json:"category"`   // 类型(feature 功能 | interface 接口 | performance 性能 | safe 安全 | experience 体验 | improve 改进 | other 其他)
 	Stage      string      `json:"stage"`      // 阶段(wait 未开始 | planned 已计划 | projected 已立项 | developing 研发中 | developed 研发完毕 | testing 测试中 | tested 测试完毕 | verified 已验收 | released 已发布 | closed 已关闭)
 	Pri        int         `json:"pri"`        // 优先级
 	Estimate   int         `json:"estimate"`   // 预计工时
+	Verify     string      `json:"verify"`     // 验收标准
 	Status     string      `json:"status"`     // 状态(draft 草稿 | active 激活 | closed 已关闭 | changed 已变更)
 	OpenedBy   *SimpleUser `json:"openedBy"`   // 创建人
 	OpenedDate string      `json:"openedDate"` // 创建时间
@@ -150,9 +171,11 @@ type StoryPageResult struct {
 type Task struct {
 	Id           int          `json:"id"`           // 任务ID
 	Project      int          `json:"project"`      // 所属项目
+	Parent       int          `json:"parent"`       // 父任务
 	Execution    int          `json:"execution"`    // 所属执行
 	Module       int          `json:"module"`       // 所属模块
 	Story        int          `json:"story"`        // 所属需求
+	FromBug      int          `json:"fromBug"`      // 来源于Bug
 	Name         string       `json:"name"`         // 任务名称
 	Type         string       `json:"type"`         // 任务类型(design 设计 | devel 开发 | request 需求 | test 测试 | study 研究 | discuss 讨论 | ui 界面 | affair 事务 | misc 其他)
 	Pri          int          `json:"pri"`          // 优先级
@@ -165,7 +188,7 @@ type Task struct {
 	OpenedBy     *SimpleUser  `json:"openedBy"`     // 创建人
 	OpenedDate   string       `json:"openedDate"`   // 创建时间
 	AssignedTo   *SimpleUser  `json:"assignedTo"`   // 指派给
-	EsStarted    string       `json:"esStarted"`    // 预计开始时间
+	EstStarted   string       `json:"estStarted"`   // 预计开始时间
 	RealStarted  string       `json:"realStarted"`  // 实际开始时间
 	FinishedBy   *SimpleUser  `json:"finishedBy"`   // 由谁完成
 	FinishedDate string       `json:"finishedDate"` // 完成时间
@@ -266,6 +289,23 @@ func (s *ZentaoClient) GetProjects(token string, pageParam PageParam, urlValues 
 	}
 }
 
+// 获取项目详情
+func (s *ZentaoClient) GetProject(token string, id int) (int, []byte, *Project, error) {
+	if status, bytes, err := s.webClient.Get(s.url, fmt.Sprintf(getProjectPath, id), nil, nil, s.setTokenHeaderfunc(token)); err != nil {
+		return status, bytes, nil, err
+	} else if s.statusIsOk(status) && len(bytes) > 0 {
+		project := &Project{}
+
+		if err := json.Unmarshal(bytes, &project); err != nil {
+			return status, bytes, nil, err
+		}
+
+		return status, bytes, project, nil
+	} else {
+		return status, bytes, nil, nil
+	}
+}
+
 // 获取项目执行列表
 func (s *ZentaoClient) GetProjectExecutions(token string, projectId int, pageParam PageParam, urlValues url.Values) (int, []byte, *ExecutionPageResult, error) {
 	if urlValues == nil {
@@ -314,6 +354,40 @@ func (s *ZentaoClient) GetProjectStories(token string, projectId int, pageParam 
 	}
 }
 
+// 获取需求详情
+func (s *ZentaoClient) GetStory(token string, id int) (int, []byte, *Story, error) {
+	if status, bytes, err := s.webClient.Get(s.url, fmt.Sprintf(getStoryPath, id), nil, nil, s.setTokenHeaderfunc(token)); err != nil {
+		return status, bytes, nil, err
+	} else if s.statusIsOk(status) && len(bytes) > 0 {
+		story := &Story{}
+
+		if err := json.Unmarshal(bytes, &story); err != nil {
+			return status, bytes, nil, err
+		}
+
+		return status, bytes, story, nil
+	} else {
+		return status, bytes, nil, nil
+	}
+}
+
+// 获取执行详情
+func (s *ZentaoClient) GetExecution(token string, id int) (int, []byte, *Execution, error) {
+	if status, bytes, err := s.webClient.Get(s.url, fmt.Sprintf(getExecutionPath, id), nil, nil, s.setTokenHeaderfunc(token)); err != nil {
+		return status, bytes, nil, err
+	} else if s.statusIsOk(status) && len(bytes) > 0 {
+		execution := &Execution{}
+
+		if err := json.Unmarshal(bytes, &execution); err != nil {
+			return status, bytes, nil, err
+		}
+
+		return status, bytes, execution, nil
+	} else {
+		return status, bytes, nil, nil
+	}
+}
+
 // 获取执行需求列表
 func (s *ZentaoClient) GetExecutionStories(token string, executionId int, pageParam PageParam, urlValues url.Values) (int, []byte, *StoryPageResult, error) {
 	if urlValues == nil {
@@ -357,6 +431,23 @@ func (s *ZentaoClient) GetExecutionTasks(token string, executionId int, pagePara
 		}
 
 		return status, bytes, pageResult, nil
+	} else {
+		return status, bytes, nil, nil
+	}
+}
+
+// 获取任务详情
+func (s *ZentaoClient) GetTask(token string, id int) (int, []byte, *Task, error) {
+	if status, bytes, err := s.webClient.Get(s.url, fmt.Sprintf(getTaskPath, id), nil, nil, s.setTokenHeaderfunc(token)); err != nil {
+		return status, bytes, nil, err
+	} else if s.statusIsOk(status) && len(bytes) > 0 {
+		task := &Task{}
+
+		if err := json.Unmarshal(bytes, &task); err != nil {
+			return status, bytes, nil, err
+		}
+
+		return status, bytes, task, nil
 	} else {
 		return status, bytes, nil, nil
 	}
