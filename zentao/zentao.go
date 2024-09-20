@@ -14,6 +14,7 @@ const (
 
 	getTokenPath             = "/api.php/v1/tokens"
 	getDepartmentsPath       = "/api.php/v1/departments"
+	getDepartmentPath        = "/api.php/v1/departments/%d"
 	getCurrentUserPath       = "/api.php/v1/user"
 	getProjectsPath          = "/api.php/v1/projects"
 	getProjectPath           = "/api.php/v1/projects/%d"
@@ -243,6 +244,23 @@ func (s *ZentaoClient) GetDepartments(token string) (int, []byte, []Department, 
 		}
 
 		return status, bytes, departments, nil
+	} else {
+		return status, bytes, nil, nil
+	}
+}
+
+// 获取部门详情
+func (s *ZentaoClient) GetDepartment(token string, id int) (int, []byte, *Department, error) {
+	if status, bytes, err := s.webClient.Get(s.url, fmt.Sprintf(getDepartmentPath, id), nil, nil, nil, s.setTokenHeaderfunc(token)); err != nil {
+		return status, bytes, nil, err
+	} else if s.statusIsOk(status) && len(bytes) > 0 {
+		department := &Department{}
+
+		if err := json.Unmarshal(bytes, &department); err != nil {
+			return status, bytes, nil, err
+		}
+
+		return status, bytes, department, nil
 	} else {
 		return status, bytes, nil, nil
 	}
