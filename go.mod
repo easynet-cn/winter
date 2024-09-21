@@ -6,7 +6,7 @@ require (
 	github.com/gin-contrib/gzip v1.0.1
 	github.com/gin-contrib/zap v1.1.4
 	github.com/gin-gonic/gin v1.10.0
-	github.com/go-co-op/gocron/v2 v2.12.0
+	github.com/go-co-op/gocron/v2 v2.12.1
 	github.com/golang-module/carbon/v2 v2.3.12
 	github.com/google/uuid v1.6.0
 	github.com/nacos-group/nacos-sdk-go/v2 v2.2.7
