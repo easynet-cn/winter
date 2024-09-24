@@ -2,8 +2,8 @@ package winter
 
 type UpdateLog struct {
 	Property string `json:"property"`
-	OldValue string `json:"old_value"`
-	NewValue string `json:"new_value"`
+	OldValue string `json:"oldValue"`
+	NewValue string `json:"newValue"`
 }
 
 func NewUpdateLog(property, oldValue, newValue string) *UpdateLog {
