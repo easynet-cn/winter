@@ -2,9 +2,7 @@ package zentao
 
 import (
 	"encoding/json"
-	"fmt"
 	"net/http"
-	"net/url"
 
 	"github.com/easynet-cn/winter"
 )
@@ -38,171 +36,6 @@ type PageResult struct {
 	Limit int `json:"limit"` // 每页数量
 }
 
-type GetTokenRequest struct {
-	Account  string `json:"account"`
-	Password string `json:"password"`
-}
-
-type GetTokenResponse struct {
-	Token string `json:"token"`
-}
-
-type Department struct {
-	Id       int          `json:"id"`       // 部门编号
-	Name     string       `json:"name"`     // 部门名称
-	Parent   int          `json:"parent"`   // 上级部门
-	Path     string       `json:"path"`     // 路径
-	Grade    int          `json:"grade"`    // 部门级别
-	Order    int          `json:"order"`    // 排序
-	Position string       `json:"position"` // 职位
-	Function string       `json:"function"` // 职能
-	Manager  string       `json:"manager"`  // 负责人
-	Children []Department `json:"children"` // 子部门
-}
-
-type UserProfile struct {
-	Profile User `json:"profile"`
-}
-
-type User struct {
-	Id       int     `json:"id"`       // 用户编号
-	Type     string  `json:"type"`     // 类型(inside 内部用户 | outside 外部用户)
-	Dept     int     `json:"dept"`     // 所属部门
-	Account  string  `json:"account"`  // 用户名
-	RealName string  `json:"realname"` // 真实姓名
-	Nickname string  `json:"nickname"` // 昵称
-	Avatar   string  `json:"avatar"`   // 头像
-	Birthday *string `json:"birthday"` // 生日
-	Gender   string  `json:"gender"`   // 性别(f 女性 | m 男性)
-	Mobile   string  `json:"mobile"`   // 手机号
-	Phone    string  `json:"phone"`    // 电话号码
-	Weixin   string  `json:"weixin"`   // 微信号码
-	Address  string  `json:"address"`  // 住址
-	Join     string  `json:"join"`     // 加入日期
-	Admin    bool    `json:"admin"`    // 是否管理员
-}
-
-type SimpleUser struct {
-	Id       int    `json:"id"`       // 用户编号
-	Account  string `json:"account"`  // 用户名
-	Avatar   string `json:"avatar"`   // 头像
-	RealName string `json:"realname"` // 真实姓名
-}
-
-type Project struct {
-	Id         int          `json:"id"`         // 项目ID
-	Parent     int          `json:"parent"`     // 所属项目集
-	Name       string       `json:"name"`       // 项目名称
-	Code       string       `json:"code"`       // 项目编号
-	Model      string       `json:"model"`      // 项目模型(scrum敏捷 | waterfall 瀑布)
-	Budget     string       `json:"budget"`     // 项目预算
-	BudgetUnit string       `json:"budgetUnit"` // 预算币种(CNY | USD)
-	Begin      *string      `json:"begin"`      // 预计开始日期
-	End        *string      `json:"end"`        // 预计结束日期
-	RealBegan  *string      `json:"realBegan"`  // 实际开始日期
-	RealEnd    *string      `json:"realEnd"`    // 实际结束日期
-	Status     string       `json:"status"`     // 项目状态(wait 未开始 | doing 进行中 | suspend 已挂起 | closed 已关闭)
-	Desc       string       `json:"desc"`       // 项目描述
-	OpenedBy   *SimpleUser  `json:"openedBy"`   // 创建人
-	OpenedDate string       `json:"openedDate"` // 创建时间
-	PM         *SimpleUser  `json:"pm"`         // 项目经理
-	Acl        string       `json:"acl"`        // 访问控制(open 公开 | private 私有)
-	Whitelist  []SimpleUser `json:"whitelist"`  // 白名单
-	Progress   string       `json:"progress"`   // 进度
-}
-
-type ProjectPageResult struct {
-	PageResult
-	Projects []Project `json:"projects"`
-}
-
-type Execution struct {
-	Id          int          `json:"id"`          // 执行ID
-	Project     int          `json:"project"`     // 所属项目
-	Name        string       `json:"name"`        // 执行名称
-	Code        string       `json:"code"`        // 执行代号
-	Begin       *string      `json:"begin"`       // 预计开始日期
-	End         *string      `json:"end"`         // 预计结束日期
-	Days        int          `json:"days"`        // 可用工作日
-	Lifetime    string       `json:"lifetime"`    // 类型(short 短期 | long 长期 | ops 运维)
-	PO          *SimpleUser  `json:"po"`          // 产品负责人
-	PM          *SimpleUser  `json:"pm"`          // 迭代负责人
-	QD          *SimpleUser  `json:"qd"`          // 测试负责人
-	RD          *SimpleUser  `json:"rd"`          // 发布负责人
-	TeamMembers []SimpleUser `json:"teamMembers"` // 团队成员
-	Desc        string       `json:"desc"`        // 迭代描述
-	Acl         string       `json:"acl"`         // 访问控制(private 私有 | open 继承项目权限)
-	Whitelist   []SimpleUser `json:"whitelist"`   // 白名单
-	Status      string       `json:"status"`      // 项目状态(wait 未开始 | doing 进行中 | suspend 已挂起 | closed 已关闭)
-	OpenedBy    *SimpleUser  `json:"openedBy"`    // 创建人
-	OpenedDate  string       `json:"openedDate"`  // 创建时间
-	Progress    any          `json:"progress"`    // 进度
-}
-
-type ExecutionPageResult struct {
-	PageResult
-	Executions []Execution `json:"executions"`
-}
-
-type Story struct {
-	Id         int         `json:"id"`         // 需求ID
-	Product    int         `json:"product"`    // 所属产品
-	Branch     int         `json:"branch"`     // 所属分支
-	Module     int         `json:"module"`     // 所属产品模块
-	FromBug    int         `json:"fromBug"`    // 来自于Bug
-	Source     string      `json:"source"`     // 需求来源(customer 客户 | user 用户 | po 产品经理 | market 市场)
-	SourceNote string      `json:"sourceNote"` // 来源备注
-	Title      string      `json:"title"`      // 需求标题
-	Category   string      `json:"category"`   // 类型(feature 功能 | interface 接口 | performance 性能 | safe 安全 | experience 体验 | improve 改进 | other 其他)
-	Stage      string      `json:"stage"`      // 阶段(wait 未开始 | planned 已计划 | projected 已立项 | developing 研发中 | developed 研发完毕 | testing 测试中 | tested 测试完毕 | verified 已验收 | released 已发布 | closed 已关闭)
-	Pri        int         `json:"pri"`        // 优先级
-	Estimate   int         `json:"estimate"`   // 预计工时
-	Verify     string      `json:"verify"`     // 验收标准
-	Status     string      `json:"status"`     // 状态(draft 草稿 | active 激活 | closed 已关闭 | changed 已变更)
-	OpenedBy   *SimpleUser `json:"openedBy"`   // 创建人
-	OpenedDate string      `json:"openedDate"` // 创建时间
-	ToBug      int         `json:"toBug"`      // 转为Bug
-}
-
-type StoryPageResult struct {
-	PageResult
-	Stories []Story `json:"stories"`
-}
-
-type Task struct {
-	Id           int          `json:"id"`           // 任务ID
-	Project      int          `json:"project"`      // 所属项目
-	Parent       int          `json:"parent"`       // 父任务
-	Execution    int          `json:"execution"`    // 所属执行
-	Module       int          `json:"module"`       // 所属模块
-	Story        int          `json:"story"`        // 所属需求
-	FromBug      int          `json:"fromBug"`      // 来源于Bug
-	Name         string       `json:"name"`         // 任务名称
-	Type         string       `json:"type"`         // 任务类型(design 设计 | devel 开发 | request 需求 | test 测试 | study 研究 | discuss 讨论 | ui 界面 | affair 事务 | misc 其他)
-	Pri          int          `json:"pri"`          // 优先级
-	Estimate     float64      `json:"estimate"`     // 预计工时
-	Left         float64      `json:"left"`         // 剩余工时
-	Deadline     *string      `json:"deadline"`     // 截止日期
-	Consumed     float64      `json:"consumed"`     // 消耗工时
-	Status       string       `json:"status"`       // 状态(wait 未开始 | doing 进行中 | done 已完成 | closed 已关闭 | cancel 已取消)
-	Desc         string       `json:"desc"`         // 任务描述
-	OpenedBy     *SimpleUser  `json:"openedBy"`     // 创建人
-	OpenedDate   string       `json:"openedDate"`   // 创建时间
-	AssignedTo   *SimpleUser  `json:"assignedTo"`   // 指派给
-	EstStarted   string       `json:"estStarted"`   // 预计开始时间
-	RealStarted  string       `json:"realStarted"`  // 实际开始时间
-	FinishedBy   *SimpleUser  `json:"finishedBy"`   // 由谁完成
-	FinishedDate string       `json:"finishedDate"` // 完成时间
-	ClosedBy     *SimpleUser  `json:"closedBy"`     // 由谁关闭
-	ClosedDate   string       `json:"closedDate"`   // 关闭时间
-	MailTo       []SimpleUser `json:"mailTo"`       // 抄送给
-}
-
-type TaskPageResult struct {
-	PageResult
-	Tasks []Task `json:"tasks"`
-}
-
 type ZentaoClient struct {
 	url       string
 	webClient *winter.WebClient
@@ -215,267 +48,39 @@ func NewZentaoClient(url string, webClient *winter.WebClient) *ZentaoClient {
 	}
 }
 
-// 获取Token
-func (s *ZentaoClient) GetToken(request *GetTokenRequest) (int, []byte, *GetTokenResponse, error) {
-	if status, bytes, err := s.webClient.Post(s.url, getTokenPath, nil, request, nil); err != nil {
-		return status, bytes, nil, err
-	} else if s.statusIsOk(status) && len(bytes) > 0 {
-		response := &GetTokenResponse{}
+func (s *ZentaoClient) ParseError(bytes []byte) string {
+	if len(bytes) == 0 {
+		return ""
+	}
 
-		if err := json.Unmarshal(bytes, &response); err != nil {
-			return status, bytes, nil, err
+	errMap := make(map[string]any)
+
+	if err := json.Unmarshal(bytes, &errMap); err == nil {
+		if msg, ok := errMap["error"].(string); ok {
+			return msg
+		}
+	}
+
+	return string(bytes)
+}
+
+func parseResult[T any](status int, bytes []byte, result *T) (int, []byte, error) {
+	if statusIsOk(status) && len(bytes) > 0 {
+		if err := json.Unmarshal(bytes, &result); err != nil {
+			return status, bytes, err
 		}
 
-		return status, bytes, response, nil
+		return status, bytes, nil
 	} else {
-		return status, bytes, nil, nil
+		return status, bytes, nil
 	}
 }
 
-// 获取部门列表
-func (s *ZentaoClient) GetDepartments(token string) (int, []byte, []Department, error) {
-	if status, bytes, err := s.webClient.Get(s.url, getDepartmentsPath, nil, nil, nil, s.setTokenHeaderfunc(token)); err != nil {
-		return status, bytes, nil, err
-	} else if s.statusIsOk(status) && len(bytes) > 0 {
-		departments := make([]Department, 0)
-
-		if err := json.Unmarshal(bytes, &departments); err != nil {
-			return status, bytes, nil, err
-		}
-
-		return status, bytes, departments, nil
-	} else {
-		return status, bytes, nil, nil
-	}
-}
-
-// 获取部门详情
-func (s *ZentaoClient) GetDepartment(token string, id int) (int, []byte, *Department, error) {
-	if status, bytes, err := s.webClient.Get(s.url, fmt.Sprintf(getDepartmentPath, id), nil, nil, nil, s.setTokenHeaderfunc(token)); err != nil {
-		return status, bytes, nil, err
-	} else if s.statusIsOk(status) && len(bytes) > 0 {
-		department := &Department{}
-
-		if err := json.Unmarshal(bytes, &department); err != nil {
-			return status, bytes, nil, err
-		}
-
-		return status, bytes, department, nil
-	} else {
-		return status, bytes, nil, nil
-	}
-}
-
-// 获取当前用户信息
-func (s *ZentaoClient) GetCurrentUser(token string) (int, []byte, *UserProfile, error) {
-	if status, bytes, err := s.webClient.Get(s.url, getCurrentUserPath, nil, nil, nil, s.setTokenHeaderfunc(token)); err != nil {
-		return status, bytes, nil, err
-	} else if s.statusIsOk(status) && len(bytes) > 0 {
-		profile := &UserProfile{}
-
-		if err := json.Unmarshal(bytes, &profile); err != nil {
-			return status, bytes, nil, err
-		}
-
-		return status, bytes, profile, nil
-	} else {
-		return status, bytes, nil, nil
-	}
-}
-
-// 获取项目列表
-func (s *ZentaoClient) GetProjects(token string, pageParam PageParam, urlValues url.Values) (int, []byte, *ProjectPageResult, error) {
-	if urlValues == nil {
-		urlValues = make(url.Values)
-	}
-
-	urlValues.Set("page", pageParam.Page)
-	urlValues.Set("limit", pageParam.Limit)
-
-	if status, bytes, err := s.webClient.Get(s.url, getProjectsPath, urlValues, nil, s.setTokenHeaderfunc(token)); err != nil {
-		return status, bytes, nil, err
-	} else if s.statusIsOk(status) && len(bytes) > 0 {
-		pageResult := &ProjectPageResult{}
-
-		if err := json.Unmarshal(bytes, &pageResult); err != nil {
-			return status, bytes, nil, err
-		}
-
-		return status, bytes, pageResult, nil
-	} else {
-		return status, bytes, nil, nil
-	}
-}
-
-// 获取项目详情
-func (s *ZentaoClient) GetProject(token string, id int) (int, []byte, *Project, error) {
-	if status, bytes, err := s.webClient.Get(s.url, fmt.Sprintf(getProjectPath, id), nil, nil, s.setTokenHeaderfunc(token)); err != nil {
-		return status, bytes, nil, err
-	} else if s.statusIsOk(status) && len(bytes) > 0 {
-		project := &Project{}
-
-		if err := json.Unmarshal(bytes, &project); err != nil {
-			return status, bytes, nil, err
-		}
-
-		return status, bytes, project, nil
-	} else {
-		return status, bytes, nil, nil
-	}
-}
-
-// 获取项目执行列表
-func (s *ZentaoClient) GetProjectExecutions(token string, projectId int, pageParam PageParam, urlValues url.Values) (int, []byte, *ExecutionPageResult, error) {
-	if urlValues == nil {
-		urlValues = make(url.Values)
-	}
-
-	urlValues.Set("page", pageParam.Page)
-	urlValues.Set("limit", pageParam.Limit)
-
-	if status, bytes, err := s.webClient.Get(s.url, fmt.Sprintf(getProjectExecutionsPath, projectId), urlValues, nil, s.setTokenHeaderfunc(token)); err != nil {
-		return status, bytes, nil, err
-	} else if s.statusIsOk(status) && len(bytes) > 0 {
-		pageResult := &ExecutionPageResult{}
-
-		if err := json.Unmarshal(bytes, &pageResult); err != nil {
-			return status, bytes, nil, err
-		}
-
-		return status, bytes, pageResult, nil
-	} else {
-		return status, bytes, nil, nil
-	}
-}
-
-// 获取项目需求列表
-func (s *ZentaoClient) GetProjectStories(token string, projectId int, pageParam PageParam, urlValues url.Values) (int, []byte, *StoryPageResult, error) {
-	if urlValues == nil {
-		urlValues = make(url.Values)
-	}
-
-	urlValues.Set("page", pageParam.Page)
-	urlValues.Set("limit", pageParam.Limit)
-
-	if status, bytes, err := s.webClient.Get(s.url, fmt.Sprintf(getProjectStoriesPath, projectId), urlValues, nil, s.setTokenHeaderfunc(token)); err != nil {
-		return status, bytes, nil, err
-	} else if s.statusIsOk(status) && len(bytes) > 0 {
-		pageResult := &StoryPageResult{}
-
-		if err := json.Unmarshal(bytes, &pageResult); err != nil {
-			return status, bytes, nil, err
-		}
-
-		return status, bytes, pageResult, nil
-	} else {
-		return status, bytes, nil, nil
-	}
-}
-
-// 获取需求详情
-func (s *ZentaoClient) GetStory(token string, id int) (int, []byte, *Story, error) {
-	if status, bytes, err := s.webClient.Get(s.url, fmt.Sprintf(getStoryPath, id), nil, nil, s.setTokenHeaderfunc(token)); err != nil {
-		return status, bytes, nil, err
-	} else if s.statusIsOk(status) && len(bytes) > 0 {
-		story := &Story{}
-
-		if err := json.Unmarshal(bytes, &story); err != nil {
-			return status, bytes, nil, err
-		}
-
-		return status, bytes, story, nil
-	} else {
-		return status, bytes, nil, nil
-	}
-}
-
-// 获取执行详情
-func (s *ZentaoClient) GetExecution(token string, id int) (int, []byte, *Execution, error) {
-	if status, bytes, err := s.webClient.Get(s.url, fmt.Sprintf(getExecutionPath, id), nil, nil, s.setTokenHeaderfunc(token)); err != nil {
-		return status, bytes, nil, err
-	} else if s.statusIsOk(status) && len(bytes) > 0 {
-		execution := &Execution{}
-
-		if err := json.Unmarshal(bytes, &execution); err != nil {
-			return status, bytes, nil, err
-		}
-
-		return status, bytes, execution, nil
-	} else {
-		return status, bytes, nil, nil
-	}
-}
-
-// 获取执行需求列表
-func (s *ZentaoClient) GetExecutionStories(token string, executionId int, pageParam PageParam, urlValues url.Values) (int, []byte, *StoryPageResult, error) {
-	if urlValues == nil {
-		urlValues = make(url.Values)
-	}
-
-	urlValues.Set("page", pageParam.Page)
-	urlValues.Set("limit", pageParam.Limit)
-
-	if status, bytes, err := s.webClient.Get(s.url, fmt.Sprintf(getExecutionStoriesPath, executionId), urlValues, nil, s.setTokenHeaderfunc(token)); err != nil {
-		return status, bytes, nil, err
-	} else if s.statusIsOk(status) && len(bytes) > 0 {
-		pageResult := &StoryPageResult{}
-
-		if err := json.Unmarshal(bytes, &pageResult); err != nil {
-			return status, bytes, nil, err
-		}
-
-		return status, bytes, pageResult, nil
-	} else {
-		return status, bytes, nil, nil
-	}
-}
-
-// 获取执行任务列表
-func (s *ZentaoClient) GetExecutionTasks(token string, executionId int, pageParam PageParam, urlValues url.Values) (int, []byte, *TaskPageResult, error) {
-	if urlValues == nil {
-		urlValues = make(url.Values)
-	}
-
-	urlValues.Set("page", pageParam.Page)
-	urlValues.Set("limit", pageParam.Limit)
-
-	if status, bytes, err := s.webClient.Get(s.url, fmt.Sprintf(getExecutionTasksPath, executionId), urlValues, nil, s.setTokenHeaderfunc(token)); err != nil {
-		return status, bytes, nil, err
-	} else if s.statusIsOk(status) && len(bytes) > 0 {
-		pageResult := &TaskPageResult{}
-
-		if err := json.Unmarshal(bytes, &pageResult); err != nil {
-			return status, bytes, nil, err
-		}
-
-		return status, bytes, pageResult, nil
-	} else {
-		return status, bytes, nil, nil
-	}
-}
-
-// 获取任务详情
-func (s *ZentaoClient) GetTask(token string, id int) (int, []byte, *Task, error) {
-	if status, bytes, err := s.webClient.Get(s.url, fmt.Sprintf(getTaskPath, id), nil, nil, s.setTokenHeaderfunc(token)); err != nil {
-		return status, bytes, nil, err
-	} else if s.statusIsOk(status) && len(bytes) > 0 {
-		task := &Task{}
-
-		if err := json.Unmarshal(bytes, &task); err != nil {
-			return status, bytes, nil, err
-		}
-
-		return status, bytes, task, nil
-	} else {
-		return status, bytes, nil, nil
-	}
-}
-
-func (s *ZentaoClient) statusIsOk(status int) bool {
+func statusIsOk(status int) bool {
 	return status >= http.StatusOK && status < http.StatusMultipleChoices
 }
 
-func (s *ZentaoClient) setTokenHeaderfunc(token string) winter.RequestHeaderFunc {
+func setTokenHeaderFunc(token string) winter.RequestHeaderFunc {
 	return func(header http.Header) {
 		header.Set(tokenHeader, token)
 	}
