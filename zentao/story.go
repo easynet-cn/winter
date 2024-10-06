@@ -32,12 +32,12 @@ type StoryPageResult struct {
 
 // 获取需求详情
 func (s *ZentaoClient) GetStory(token string, id int) (int, []byte, *Story, error) {
-	if status, bytes, err := s.webClient.Get(s.url, fmt.Sprintf(getStoryPath, id), nil, nil, setTokenHeaderFunc(token)); err != nil {
+	if status, bytes, err := s.webClient.Get(s.url, fmt.Sprintf(getStoryPath, id), nil, nil, SetTokenHeaderFunc(token)); err != nil {
 		return status, bytes, nil, err
 	} else {
 		story := &Story{}
 
-		status, bytes, err := parseResult(status, bytes, story)
+		status, bytes, err := ParseResult(status, bytes, story)
 
 		return status, bytes, story, err
 	}
@@ -52,12 +52,12 @@ func (s *ZentaoClient) GetProjectStories(token string, projectId int, pageParam 
 	urlValues.Set("page", pageParam.Page)
 	urlValues.Set("limit", pageParam.Limit)
 
-	if status, bytes, err := s.webClient.Get(s.url, fmt.Sprintf(getProjectStoriesPath, projectId), urlValues, nil, setTokenHeaderFunc(token)); err != nil {
+	if status, bytes, err := s.webClient.Get(s.url, fmt.Sprintf(getProjectStoriesPath, projectId), urlValues, nil, SetTokenHeaderFunc(token)); err != nil {
 		return status, bytes, nil, err
 	} else {
 		pageResult := &StoryPageResult{}
 
-		status, bytes, err := parseResult(status, bytes, pageResult)
+		status, bytes, err := ParseResult(status, bytes, pageResult)
 
 		return status, bytes, pageResult, err
 	}
@@ -72,12 +72,12 @@ func (s *ZentaoClient) GetExecutionStories(token string, executionId int, pagePa
 	urlValues.Set("page", pageParam.Page)
 	urlValues.Set("limit", pageParam.Limit)
 
-	if status, bytes, err := s.webClient.Get(s.url, fmt.Sprintf(getExecutionStoriesPath, executionId), urlValues, nil, setTokenHeaderFunc(token)); err != nil {
+	if status, bytes, err := s.webClient.Get(s.url, fmt.Sprintf(getExecutionStoriesPath, executionId), urlValues, nil, SetTokenHeaderFunc(token)); err != nil {
 		return status, bytes, nil, err
 	} else {
 		pageResult := &StoryPageResult{}
 
-		status, bytes, err := parseResult(status, bytes, pageResult)
+		status, bytes, err := ParseResult(status, bytes, pageResult)
 
 		return status, bytes, pageResult, err
 	}

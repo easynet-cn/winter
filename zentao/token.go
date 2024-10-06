@@ -16,7 +16,7 @@ func (s *ZentaoClient) GetToken(request *GetTokenRequest) (int, []byte, *GetToke
 	} else {
 		response := &GetTokenResponse{}
 
-		status, bytes, err := parseResult(status, bytes, response)
+		status, bytes, err := ParseResult(status, bytes, response)
 
 		return status, bytes, response, err
 	}

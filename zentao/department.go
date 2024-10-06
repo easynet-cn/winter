@@ -19,12 +19,12 @@ type Department struct {
 
 // 获取部门列表
 func (s *ZentaoClient) GetDepartments(token string) (int, []byte, []Department, error) {
-	if status, bytes, err := s.webClient.Get(s.url, getDepartmentsPath, nil, nil, nil, setTokenHeaderFunc(token)); err != nil {
+	if status, bytes, err := s.webClient.Get(s.url, getDepartmentsPath, nil, nil, nil, SetTokenHeaderFunc(token)); err != nil {
 		return status, bytes, nil, err
 	} else {
 		departments := make([]Department, 0)
 
-		status, bytes, err := parseResult(status, bytes, &departments)
+		status, bytes, err := ParseResult(status, bytes, &departments)
 
 		return status, bytes, departments, err
 	}
@@ -32,12 +32,12 @@ func (s *ZentaoClient) GetDepartments(token string) (int, []byte, []Department, 
 
 // 获取部门详情
 func (s *ZentaoClient) GetDepartment(token string, id int) (int, []byte, *Department, error) {
-	if status, bytes, err := s.webClient.Get(s.url, fmt.Sprintf(getDepartmentPath, id), nil, nil, nil, setTokenHeaderFunc(token)); err != nil {
+	if status, bytes, err := s.webClient.Get(s.url, fmt.Sprintf(getDepartmentPath, id), nil, nil, nil, SetTokenHeaderFunc(token)); err != nil {
 		return status, bytes, nil, err
 	} else {
 		department := &Department{}
 
-		status, bytes, err := parseResult(status, bytes, department)
+		status, bytes, err := ParseResult(status, bytes, department)
 
 		return status, bytes, department, err
 	}

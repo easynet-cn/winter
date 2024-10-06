@@ -41,12 +41,12 @@ type TaskPageResult struct {
 
 // 获取任务详情
 func (s *ZentaoClient) GetTask(token string, id int) (int, []byte, *Task, error) {
-	if status, bytes, err := s.webClient.Get(s.url, fmt.Sprintf(getTaskPath, id), nil, nil, setTokenHeaderFunc(token)); err != nil {
+	if status, bytes, err := s.webClient.Get(s.url, fmt.Sprintf(getTaskPath, id), nil, nil, SetTokenHeaderFunc(token)); err != nil {
 		return status, bytes, nil, err
 	} else {
 		task := &Task{}
 
-		status, bytes, err := parseResult(status, bytes, task)
+		status, bytes, err := ParseResult(status, bytes, task)
 
 		return status, bytes, task, err
 	}
@@ -61,12 +61,12 @@ func (s *ZentaoClient) GetExecutionTasks(token string, executionId int, pagePara
 	urlValues.Set("page", pageParam.Page)
 	urlValues.Set("limit", pageParam.Limit)
 
-	if status, bytes, err := s.webClient.Get(s.url, fmt.Sprintf(getExecutionTasksPath, executionId), urlValues, nil, setTokenHeaderFunc(token)); err != nil {
+	if status, bytes, err := s.webClient.Get(s.url, fmt.Sprintf(getExecutionTasksPath, executionId), urlValues, nil, SetTokenHeaderFunc(token)); err != nil {
 		return status, bytes, nil, err
 	} else {
 		pageResult := &TaskPageResult{}
 
-		status, bytes, err := parseResult(status, bytes, pageResult)
+		status, bytes, err := ParseResult(status, bytes, pageResult)
 
 		return status, bytes, pageResult, err
 	}

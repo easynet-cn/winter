@@ -64,8 +64,8 @@ func ParseError(bytes []byte) string {
 	return string(bytes)
 }
 
-func parseResult[T any](status int, bytes []byte, result *T) (int, []byte, error) {
-	if statusIsOk(status) && len(bytes) > 0 {
+func ParseResult[T any](status int, bytes []byte, result *T) (int, []byte, error) {
+	if StatusIsOk(status) && len(bytes) > 0 {
 		if err := json.Unmarshal(bytes, &result); err != nil {
 			return status, bytes, err
 		}
@@ -76,11 +76,15 @@ func parseResult[T any](status int, bytes []byte, result *T) (int, []byte, error
 	}
 }
 
-func statusIsOk(status int) bool {
+func StatusIsOk(status int) bool {
 	return status >= http.StatusOK && status < http.StatusMultipleChoices
 }
 
-func setTokenHeaderFunc(token string) winter.RequestHeaderFunc {
+func StatusNotOk(status int) bool {
+	return !StatusIsOk(status)
+}
+
+func SetTokenHeaderFunc(token string) winter.RequestHeaderFunc {
 	return func(header http.Header) {
 		header.Set(tokenHeader, token)
 	}

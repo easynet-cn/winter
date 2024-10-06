@@ -31,12 +31,12 @@ type UserProfile struct {
 
 // 获取当前用户信息
 func (s *ZentaoClient) GetCurrentUser(token string) (int, []byte, *UserProfile, error) {
-	if status, bytes, err := s.webClient.Get(s.url, getCurrentUserPath, nil, nil, nil, setTokenHeaderFunc(token)); err != nil {
+	if status, bytes, err := s.webClient.Get(s.url, getCurrentUserPath, nil, nil, nil, SetTokenHeaderFunc(token)); err != nil {
 		return status, bytes, nil, err
 	} else {
 		profile := &UserProfile{}
 
-		status, bytes, err := parseResult(status, bytes, profile)
+		status, bytes, err := ParseResult(status, bytes, profile)
 
 		return status, bytes, profile, err
 	}
