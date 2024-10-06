@@ -48,7 +48,7 @@ func NewZentaoClient(url string, webClient *winter.WebClient) *ZentaoClient {
 	}
 }
 
-func (s *ZentaoClient) ParseError(bytes []byte) string {
+func ParseError(bytes []byte) string {
 	if len(bytes) == 0 {
 		return ""
 	}
