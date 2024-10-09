@@ -11,11 +11,12 @@ import (
 type ApplicationFunc func()
 
 type Application struct {
-	engine   *gin.Engine
-	nacos    *Nacos
-	logger   *zap.Logger
-	database *Database
-	redis    *Redis
+	engine     *gin.Engine
+	nacos      *Nacos
+	logger     *zap.Logger
+	database   *Database
+	redis      *Redis
+	TencentEss *TencentEss
 }
 
 func NewApplication(
@@ -53,6 +54,10 @@ func NewApplication(
 	redis.Init()
 
 	application.redis = redis
+
+	tencentEss := NewTencentEss(nacos.GetConfig())
+
+	tencentEss.Init()
 
 	RegisterDefaultMiddleware(
 		application.engine,
