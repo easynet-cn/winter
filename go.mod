@@ -1,6 +1,6 @@
 module github.com/easynet-cn/winter
 
-go 1.22
+go 1.23
 
 require (
 	github.com/gin-contrib/gzip v1.0.1

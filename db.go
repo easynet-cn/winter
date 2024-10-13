@@ -44,3 +44,7 @@ func (m *Database) Init() {
 func (m *Database) GetDatabases() map[string]*xorm.Engine {
 	return m.dbs
 }
+
+func (m *Database) GetDatabase(key string) *xorm.Engine {
+	return m.dbs[key]
+}
