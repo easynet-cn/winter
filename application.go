@@ -16,7 +16,7 @@ type Application struct {
 	logger     *zap.Logger
 	database   *Database
 	redis      *Redis
-	TencentEss *TencentEss
+	tencentEss *TencentEss
 }
 
 func NewApplication(
@@ -89,6 +89,10 @@ func (m *Application) GetDatabase() *Database {
 
 func (m *Application) GetRedis() *Redis {
 	return m.redis
+}
+
+func (m *Application) GetTencentEss() *TencentEss {
+	return m.tencentEss
 }
 
 func (m *Application) RegisterScheduler(scheduler *Scheduler) {
