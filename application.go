@@ -59,6 +59,8 @@ func NewApplication(
 
 	tencentEss.Init()
 
+	application.tencentEss = tencentEss
+
 	RegisterDefaultMiddleware(
 		application.engine,
 		&SystemMiddleware{
