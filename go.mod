@@ -10,11 +10,11 @@ require (
 	github.com/golang-module/carbon/v2 v2.4.1
 	github.com/google/uuid v1.6.0
 	github.com/nacos-group/nacos-sdk-go/v2 v2.2.7
-	github.com/redis/go-redis/v9 v9.6.2
+	github.com/redis/go-redis/v9 v9.7.0
 	github.com/spf13/pflag v1.0.5
 	github.com/spf13/viper v1.19.0
-	github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/common v1.0.1023
-	github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/ess v1.0.1023
+	github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/common v1.0.1026
+	github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/ess v1.0.1026
 	go.elastic.co/ecszap v1.0.3
 	go.opentelemetry.io/contrib/instrumentation/github.com/gin-gonic/gin/otelgin v0.56.0
 	go.uber.org/zap v1.27.0
