@@ -345,10 +345,10 @@ github.com/subosito/gotenv v1.6.0 h1:9NlTDc1FTs4qu0DDq7AEtTPNw6SVm7uBMsUCUjABIf8
 github.com/subosito/gotenv v1.6.0/go.mod h1:Dk4QP5c2W3ibzajGcXpNraDfq2IrhjMIvMSWPKKo0FU=
 github.com/syndtr/goleveldb v1.0.0 h1:fBdIW9lB4Iz0n9khmH8w27SJ3QEJ7+IgjPEwGSZiFdE=
 github.com/syndtr/goleveldb v1.0.0/go.mod h1:ZVVdQEZoIme9iO1Ch2Jdy24qqXrMMOU6lpPAyBWyWuQ=
-github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/common v1.0.1026 h1:6iBtl1CunsfWcT6IyCuRdgefJ/Zmsp5MTDujnolyuQs=
-github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/common v1.0.1026/go.mod h1:r5r4xbfxSaeR04b166HGsBa/R4U3SueirEUpXGuw+Q0=
-github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/ess v1.0.1026 h1:EJ0sjLQLBoIMFYhYh+B6+GtdDDAlagykfuXYs5TJWsI=
-github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/ess v1.0.1026/go.mod h1:nN+uaGa0PoQCIV0sARN0z1B9ubaSQinkQY1MoMjsjjM=
+github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/common v1.0.1027 h1:4/chUqYM26idp2Rd3pPmsL94RTAwIM5dGXoaskOQ+cM=
+github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/common v1.0.1027/go.mod h1:r5r4xbfxSaeR04b166HGsBa/R4U3SueirEUpXGuw+Q0=
+github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/ess v1.0.1027 h1:aFMFZGARUCPznQzdP30ylsQwJFPQn33ireqHT55EfNk=
+github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/ess v1.0.1027/go.mod h1:SqTpzWvGUS4hKWQhLOVEWLavHDhgjiAJyCVe6aj13PE=
 github.com/twitchyliquid64/golang-asm v0.15.1 h1:SU5vSMR7hnwNxj24w34ZyCi/FmDZTkS4MhqMhdFk5YI=
 github.com/twitchyliquid64/golang-asm v0.15.1/go.mod h1:a1lVb/DtPvCB8fslRZhAngC2+aY1QWCk3Cedj/Gdt08=
 github.com/ugorji/go/codec v1.2.12 h1:9LC83zGrHhuUA9l16C9AHXAqEV/2wBQ4nkvumAE65EE=
