@@ -1,4 +1,4 @@
-package winter
+package orm
 
 import "xorm.io/xorm"
 
@@ -24,6 +24,22 @@ func FindAll[T any](engine *xorm.Engine, entites []T) error {
 
 func FindWithSql[T any](engine *xorm.Engine, entites []T, sql string, parameters ...any) error {
 	return engine.SQL(sql, parameters...).Find(&entites)
+}
+
+func FindPagination[T any](engine *xorm.Engine, entites []T, countSql string, countParameters []any, querySql string, queryParameters []any) (int64, error) {
+	total := int64(0)
+
+	if _, err := engine.SQL(countSql, countParameters...).Get(&total); err != nil {
+		return total, err
+	}
+
+	if total > 0 {
+		if err := engine.SQL(querySql, queryParameters...).Find(&entites); err != nil {
+			return total, err
+		}
+	}
+
+	return total, nil
 }
 
 func Create[T any](engine *xorm.Engine, entity *T) error {
