@@ -18,15 +18,15 @@ func FindOne[T any](engine *xorm.Engine, entity *T, sql string, parameters ...an
 	return nil
 }
 
-func FindAll[T any](engine *xorm.Engine, entites []T) error {
+func FindAll[T any](engine *xorm.Engine, entites *[]T) error {
 	return engine.Find(&entites)
 }
 
-func FindWithSql[T any](engine *xorm.Engine, entites []T, sql string, parameters ...any) error {
+func FindWithSql[T any](engine *xorm.Engine, entites *[]T, sql string, parameters ...any) error {
 	return engine.SQL(sql, parameters...).Find(&entites)
 }
 
-func FindPagination[T any](engine *xorm.Engine, entites []T, countSql string, countParameters []any, querySql string, queryParameters []any) (int64, error) {
+func FindPagination[T any](engine *xorm.Engine, entites *[]T, countSql string, countParameters []any, querySql string, queryParameters []any) (int64, error) {
 	total := int64(0)
 
 	if _, err := engine.SQL(countSql, countParameters...).Get(&total); err != nil {
