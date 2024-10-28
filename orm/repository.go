@@ -19,11 +19,11 @@ func FindOne[T any](engine *xorm.Engine, entity *T, sql string, parameters ...an
 }
 
 func FindAll[T any](engine *xorm.Engine, entites *[]T) error {
-	return engine.Find(&entites)
+	return engine.Find(entites)
 }
 
 func FindWithSql[T any](engine *xorm.Engine, entites *[]T, sql string, parameters ...any) error {
-	return engine.SQL(sql, parameters...).Find(&entites)
+	return engine.SQL(sql, parameters...).Find(entites)
 }
 
 func FindPagination[T any](engine *xorm.Engine, entites *[]T, countSql string, countParameters []any, querySql string, queryParameters []any) (int64, error) {
@@ -34,7 +34,7 @@ func FindPagination[T any](engine *xorm.Engine, entites *[]T, countSql string, c
 	}
 
 	if total > 0 {
-		if err := engine.SQL(querySql, queryParameters...).Find(&entites); err != nil {
+		if err := engine.SQL(querySql, queryParameters...).Find(entites); err != nil {
 			return total, err
 		}
 	}
