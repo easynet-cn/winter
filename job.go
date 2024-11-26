@@ -1,8 +1,8 @@
 package winter
 
 import (
+	"github.com/dromara/carbon/v2"
 	"github.com/go-co-op/gocron/v2"
-	"github.com/golang-module/carbon/v2"
 	"github.com/google/uuid"
 )
 
