@@ -1,20 +1,20 @@
 module github.com/easynet-cn/winter
 
-go 1.23
+go 1.24
 
 require (
 	github.com/dromara/carbon/v2 v2.5.2
-	github.com/gin-contrib/gzip v1.2.0
+	github.com/gin-contrib/gzip v1.2.2
 	github.com/gin-contrib/zap v1.1.4
 	github.com/gin-gonic/gin v1.10.0
 	github.com/go-co-op/gocron/v2 v2.15.0
 	github.com/google/uuid v1.6.0
 	github.com/nacos-group/nacos-sdk-go/v2 v2.2.8
 	github.com/redis/go-redis/v9 v9.7.0
-	github.com/spf13/pflag v1.0.5
+	github.com/spf13/pflag v1.0.6
 	github.com/spf13/viper v1.19.0
-	github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/common v1.0.1089
-	github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/ess v1.0.1089
+	github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/common v1.0.1096
+	github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/ess v1.0.1096
 	go.elastic.co/ecszap v1.0.3
 	go.opentelemetry.io/contrib/instrumentation/github.com/gin-gonic/gin/otelgin v0.59.0
 	go.uber.org/zap v1.27.0
