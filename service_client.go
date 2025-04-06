@@ -1,55 +1,26 @@
 package winter
 
 import (
-	"fmt"
 	"net/http"
 	"net/url"
-
-	"github.com/nacos-group/nacos-sdk-go/v2/clients/naming_client"
-	"github.com/nacos-group/nacos-sdk-go/v2/vo"
 )
 
 type Banlancer interface {
 	GetUri(serviceName string) (string, error)
 }
 
-type NacosBanlancer struct {
-	namingClient naming_client.INamingClient
-}
-
-func (m *NacosBanlancer) GetUri(serviceName string) (string, error) {
-	instance, err := m.namingClient.SelectOneHealthyInstance(vo.SelectOneHealthInstanceParam{ServiceName: serviceName})
-
-	if err != nil {
-		return "", err
-	}
-
-	if instance == nil {
-		return "", fmt.Errorf("服务（%s）没有可用的实例", serviceName)
-	}
-
-	return fmt.Sprintf("http://%s:%d", instance.Ip, instance.Port), nil
-}
-
 type ServiceClient struct {
-	namingClient naming_client.INamingClient
-	webClient    *WebClient
-	banlancer    Banlancer
+	webClient *WebClient
+	banlancer Banlancer
 }
 
 func NewServiceClient(
-	namingClient naming_client.INamingClient,
 	webClient *WebClient,
 	banlancer Banlancer) *ServiceClient {
 
-	if banlancer == nil {
-		banlancer = &NacosBanlancer{namingClient: namingClient}
-	}
-
 	return &ServiceClient{
-		namingClient: namingClient,
-		webClient:    webClient,
-		banlancer:    banlancer,
+		webClient: webClient,
+		banlancer: banlancer,
 	}
 }
 

@@ -5,13 +5,16 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
+	"github.com/spf13/viper"
 	"go.uber.org/zap"
 )
 
 type ApplicationFunc func()
 
 type Application struct {
+	config     *viper.Viper
 	engine     *gin.Engine
+	consul     *Consul
 	nacos      *Nacos
 	logger     *zap.Logger
 	database   *Database
@@ -24,9 +27,21 @@ func NewApplication(
 	version string,
 	syncDBFunc func() error,
 ) *Application {
+	consul := NewConsul()
+
+	consul.Init()
+
+	config := consul.GetConfig()
+
 	nacos := NewNacos(metadata)
 
 	nacos.Init()
+
+	keys := nacos.config.AllKeys()
+
+	for _, key := range keys {
+		config.Set(key, nacos.config.Get(key))
+	}
 
 	logger := NewLogger(nacos.GetConfig())
 
@@ -35,27 +50,28 @@ func NewApplication(
 	engine := gin.Default()
 
 	application := &Application{
+		config: config,
+		consul: consul,
 		engine: engine,
 		nacos:  nacos,
 		logger: logger,
 	}
 
-	application.nacos.Init()
-	application.logger = NewLogger(nacos.GetConfig())
+	application.logger = NewLogger(config)
 
-	database := NewDatabase(nacos.GetConfig())
+	database := NewDatabase(config)
 
 	database.Init()
 
 	application.database = database
 
-	redis := NewRedis(nacos.GetConfig())
+	redis := NewRedis(config)
 
 	redis.Init()
 
 	application.redis = redis
 
-	tencentEss := NewTencentEss(nacos.GetConfig())
+	tencentEss := NewTencentEss(config)
 
 	tencentEss.Init()
 
@@ -65,7 +81,7 @@ func NewApplication(
 		application.engine,
 		&SystemMiddleware{
 			Logger:     application.logger,
-			Config:     nacos.GetConfig(),
+			Config:     config,
 			Version:    version,
 			SyncDBFunc: syncDBFunc,
 		})
@@ -73,8 +89,16 @@ func NewApplication(
 	return application
 }
 
+func (m *Application) GetConfig() *viper.Viper {
+	return m.config
+}
+
 func (m *Application) GetEngine() *gin.Engine {
 	return m.engine
+}
+
+func (m *Application) GetConsul() *Consul {
+	return m.consul
 }
 
 func (m *Application) GetNacos() *Nacos {
@@ -111,7 +135,7 @@ func (m *Application) Run(funcs ...ApplicationFunc) {
 		}
 	}
 
-	if err := m.engine.Run(fmt.Sprintf(":%d", m.nacos.GetConfig().GetInt("server.port"))); err != nil {
+	if err := m.engine.Run(fmt.Sprintf(":%d", m.config.GetInt("server.port"))); err != nil {
 		panic(err)
 	}
 }

@@ -26,6 +26,28 @@ const (
 	defaultWeight    = 1
 )
 
+type NacosBanlancer struct {
+	namingClient naming_client.INamingClient
+}
+
+func NewNacosBanlancer(namingClient naming_client.INamingClient) Banlancer {
+	return &NacosBanlancer{namingClient: namingClient}
+}
+
+func (m *NacosBanlancer) GetUri(serviceName string) (string, error) {
+	instance, err := m.namingClient.SelectOneHealthyInstance(vo.SelectOneHealthInstanceParam{ServiceName: serviceName})
+
+	if err != nil {
+		return "", err
+	}
+
+	if instance == nil {
+		return "", fmt.Errorf("服务（%s）没有可用的实例", serviceName)
+	}
+
+	return fmt.Sprintf("http://%s:%d", instance.Ip, instance.Port), nil
+}
+
 type Nacos struct {
 	config               *viper.Viper
 	defaultNameingClient naming_client.INamingClient
@@ -45,7 +67,7 @@ func NewNacos(
 	}
 
 	return &Nacos{
-		config:               viper.New(),
+		config:               config,
 		metadata:             metadata,
 		serviceNamingClients: make(map[string]naming_client.INamingClient),
 	}
@@ -71,11 +93,11 @@ func (m *Nacos) GetMetadata() map[string]string {
 }
 
 func (m *Nacos) BuildDefaultServiceClient(webClient *WebClient) *ServiceClient {
-	return NewServiceClient(m.defaultNameingClient, webClient, nil)
+	return NewServiceClient(webClient, NewNacosBanlancer(m.defaultNameingClient))
 }
 
 func (m *Nacos) BuildServiceClientWithConfigKey(webClient *WebClient, configKey string) *ServiceClient {
-	return NewServiceClient(m.serviceNamingClients[configKey], webClient, nil)
+	return NewServiceClient(webClient, NewNacosBanlancer(m.serviceNamingClients[configKey]))
 }
 
 func (m *Nacos) Init() {
@@ -91,41 +113,43 @@ func (m *Nacos) Init() {
 		panic(err)
 	}
 
-	serverConfig, clientConfig := getNacosConfig(m.config)
+	if m.config.InConfig("nacos") {
+		serverConfig, clientConfig := getNacosConfig(m.config)
 
-	if configClient, err := clients.NewConfigClient(
-		vo.NacosClientParam{
-			ClientConfig:  &clientConfig,
-			ServerConfigs: serverConfig,
-		},
-	); err != nil {
-		panic(err)
-	} else if remoteConfig, err := m.getRemoteConfig(configClient); err != nil {
-		panic(err)
-	} else {
-		keys := remoteConfig.AllKeys()
+		if configClient, err := clients.NewConfigClient(
+			vo.NacosClientParam{
+				ClientConfig:  &clientConfig,
+				ServerConfigs: serverConfig,
+			},
+		); err != nil {
+			panic(err)
+		} else if remoteConfig, err := m.getRemoteConfig(configClient); err != nil {
+			panic(err)
+		} else {
+			keys := remoteConfig.AllKeys()
 
-		for _, key := range keys {
-			m.config.Set(key, remoteConfig.Get(key))
+			for _, key := range keys {
+				m.config.Set(key, remoteConfig.Get(key))
+			}
 		}
-	}
 
-	if namingClient, err := clients.NewNamingClient(
-		vo.NacosClientParam{
-			ClientConfig:  &clientConfig,
-			ServerConfigs: serverConfig,
-		},
-	); err != nil {
-		panic(err)
-	} else if success, err := m.registerService(namingClient); err != nil {
-		panic(err)
-	} else if !success {
-		log.Fatalf("Failed to register service")
-	} else {
-		m.defaultNameingClient = namingClient
-	}
+		if namingClient, err := clients.NewNamingClient(
+			vo.NacosClientParam{
+				ClientConfig:  &clientConfig,
+				ServerConfigs: serverConfig,
+			},
+		); err != nil {
+			panic(err)
+		} else if success, err := m.registerService(namingClient); err != nil {
+			panic(err)
+		} else if !success {
+			log.Fatalf("Failed to register service")
+		} else {
+			m.defaultNameingClient = namingClient
+		}
 
-	m.registerNacoseServices()
+		m.registerServices()
+	}
 }
 
 func getFlatSet() (*pflag.FlagSet, error) {
@@ -256,7 +280,7 @@ func (m *Nacos) registerService(namingClient naming_client.INamingClient) (bool,
 	})
 }
 
-func (m *Nacos) registerNacoseServices() {
+func (m *Nacos) registerServices() {
 	for k := range m.config.GetStringMap("nacos.services") {
 		serverConfig := []constant.ServerConfig{
 			{

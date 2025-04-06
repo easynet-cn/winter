@@ -27,6 +27,7 @@ func RegisterDefaultMiddleware(engine *gin.Engine, systemMiddleware *SystemMiddl
 	engine.Use(gzip.Gzip(gzip.DefaultCompression))
 	engine.Use(Recovery(systemMiddleware.Logger))
 
+	engine.GET(HealthCheckUrl, HealthCheck)
 	engine.GET("/system/stats", SystemStats)
 	engine.GET("/system/version", Version(systemMiddleware.Config, systemMiddleware.Version))
 	engine.GET("/db/sync", SyncDB(systemMiddleware.SyncDBFunc))
@@ -78,4 +79,8 @@ func SyncDB(f func() error) gin.HandlerFunc {
 		}
 
 	}
+}
+
+func HealthCheck(ctx *gin.Context) {
+	ctx.JSON(http.StatusOK, gin.H{"status": "UP"})
 }
