@@ -69,7 +69,7 @@ func (m *Consul) Init() {
 			m.defaultClient = client
 		}
 
-		configKey := fmt.Sprintf("%s/%s,%s/data", m.config.GetString("consul.config.prefix"), m.config.GetString("spring.application.name"), m.config.GetString("spring.application.profile.active"))
+		configKey := fmt.Sprintf("%s/%s,%s/data", m.config.GetString("consul.config.prefix"), m.config.GetString("spring.application.name"), m.config.GetString("spring.application.profiles.active"))
 
 		if kv, _, err := m.defaultClient.KV().Get(configKey, nil); err != nil {
 			panic(err)
