@@ -7,20 +7,20 @@ require (
 	github.com/gin-contrib/gzip v1.2.3
 	github.com/gin-contrib/zap v1.1.5
 	github.com/gin-gonic/gin v1.10.1
-	github.com/go-co-op/gocron/v2 v2.16.2
+	github.com/go-co-op/gocron/v2 v2.16.3
 	github.com/google/uuid v1.6.0
 	github.com/hashicorp/consul/api v1.32.1
 	github.com/nacos-group/nacos-sdk-go/v2 v2.3.2
 	github.com/redis/go-redis/v9 v9.11.0
 	github.com/spf13/pflag v1.0.7
 	github.com/spf13/viper v1.20.1
-	github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/common v1.0.1209
-	github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/ess v1.0.1209
+	github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/common v1.1.4
+	github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/ess v1.1.4
 	go.elastic.co/ecszap v1.0.3
 	go.opentelemetry.io/contrib/instrumentation/github.com/gin-gonic/gin/otelgin v0.62.0
 	go.uber.org/zap v1.27.0
 	gopkg.in/natefinch/lumberjack.v2 v2.2.1
-	xorm.io/xorm v1.3.9
+	xorm.io/xorm v1.3.10
 )
 
 require (
@@ -112,12 +112,12 @@ require (
 	go.opentelemetry.io/otel/trace v1.37.0 // indirect
 	go.uber.org/multierr v1.11.0 // indirect
 	golang.org/x/arch v0.18.0 // indirect
-	golang.org/x/crypto v0.39.0 // indirect
+	golang.org/x/crypto v0.40.0 // indirect
 	golang.org/x/exp v0.0.0-20250305212735-054e65f0b394 // indirect
 	golang.org/x/net v0.41.0 // indirect
-	golang.org/x/sync v0.15.0 // indirect
-	golang.org/x/sys v0.33.0 // indirect
-	golang.org/x/text v0.26.0 // indirect
+	golang.org/x/sync v0.16.0 // indirect
+	golang.org/x/sys v0.34.0 // indirect
+	golang.org/x/text v0.27.0 // indirect
 	golang.org/x/time v0.8.0 // indirect
 	google.golang.org/genproto/googleapis/rpc v0.0.0-20241223144023-3abc09e42ca8 // indirect
 	google.golang.org/grpc v1.67.3 // indirect
