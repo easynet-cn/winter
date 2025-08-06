@@ -61,7 +61,7 @@ func (m *Consul) Init() {
 	if m.config.InConfig("consul") {
 		config := api.DefaultConfig()
 
-		config.Address = fmt.Sprintf("http://%s", m.config.GetString("consul.host"))
+		config.Address = fmt.Sprintf("http://%s:%d", m.config.GetString("consul.host"), m.config.GetInt32("consul.port"))
 
 		if client, err := api.NewClient(config); err != nil {
 			panic(err)
